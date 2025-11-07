@@ -1,7 +1,7 @@
 const dhive = require("@hiveio/dhive");
 const fs = require("fs");
 
-// Lista de RPCs para Hive Blockchain (com bridge)
+// Lista de RPCs da blockchain Hive (com suporte a bridge)
 const HIVE_NODES = [
   "https://api.deathwing.me",
   "https://api.c0ff33a.uk",
@@ -11,43 +11,33 @@ const HIVE_NODES = [
   "https://api.hive.blog"
 ];
 
-// Lista reservada para Hive-Engine (para futuro uso)
-const ENGINE_NODES = [
-  "https://api.primersion.com",
-  "https://api.hive-engine.com/rpc",
-  "https://api2.hive-engine.com/rpc",
-  "https://herpc.dtoools.dev",
-  "https://enginerpc.com",
-  "https://herpc.kanibot.com",
-  "https://herpc.actifit.io"
-];
-
 // Cliente com failover automático
 const client = new dhive.Client(HIVE_NODES, { timeout: 4000 });
 
-// Conversão VESTS → HP
+// Converte VESTS → HP
 async function getGlobalProps() {
   const props = await client.call("database_api", "get_dynamic_global_properties", {});
-  return {
-    totalVestingFundHive: parseFloat(props.total_vesting_fund_hive),
-    totalVestingShares: parseFloat(props.total_vesting_shares)
-  };
+  const totalVestingFundHive = parseFloat(props.total_vesting_fund_hive);
+  const totalVestingShares = parseFloat(props.total_vesting_shares);
+  return { totalVestingFundHive, totalVestingShares };
 }
 
 async function vestToHP(vest) {
-  const g = await getGlobalProps();
-  return vest * (g.totalVestingFundHive / g.totalVestingShares);
+  const { totalVestingFundHive, totalVestingShares } = await getGlobalProps();
+  return vest * (totalVestingFundHive / totalVestingShares);
 }
 
-// BUSCA DELEGADORES EXATAMENTE COMO PEAKD / HIVETASKS
+// Busca delegadores que DELEGAM para essa conta (igual PeakD)
 async function getDelegators(delegatee) {
-  const acc = await client.call("bridge", "get_account", { account: delegatee });
+  const account = await client.call("bridge", "get_account", { account: delegatee });
 
-  if (!acc.delegations_in) return [];
+  if (!account || !account.delegations_in) {
+    return [];
+  }
 
   const list = [];
 
-  for (const d of acc.delegations_in) {
+  for (const d of account.delegations_in) {
     const hp = await vestToHP(parseFloat(d.vesting_shares));
     list.push({ delegator: d.delegator, hp });
   }
@@ -55,6 +45,7 @@ async function getDelegators(delegatee) {
   return list.sort((a, b) => b.hp - a.hp);
 }
 
+// Função principal
 async function run() {
   try {
     const data = await getDelegators("hive-br.voter");
@@ -62,4 +53,9 @@ async function run() {
     console.log("✅ current.json atualizado com sucesso.");
   } catch (e) {
     console.error("❌ Erro ao coletar delegações:", e.message);
-    fs.writeFileSy
+    fs.writeFileSync("data/current.json", "[]");
+    console.log("⚠️ Salvando lista vazia para evitar erro no site.");
+  }
+}
+
+run();
