@@ -1,7 +1,8 @@
 const dhive = require("@hiveio/dhive");
 const fs = require("fs");
 
-const client = new dhive.Client("https://api.hive.blog");
+const client = new dhive.Client("https://api.openhive.network");
+
 
 async function getDelegators(delegatee) {
   const delegations = await client.call("condenser_api", "get_vesting_delegations", [
