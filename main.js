@@ -23,7 +23,7 @@ async function render() {
   const history = await loadHistory();
   const tbody = document.getElementById("ranking-body");
 
-  tbody.innerHTML = ""; // Limpa antes de renderizar
+  tbody.innerHTML = "";
 
   ranking.forEach((entry) => {
     const row = document.createElement("tr");
@@ -41,23 +41,10 @@ async function render() {
     if (labels.length > 1) {
       new Chart(document.getElementById(`chart-${entry.delegator}`), {
         type: "line",
-        data: {
-          labels,
-          datasets: [
-            {
-              data,
-              borderWidth: 1
-            }
-          ]
-        },
+        data: { labels, datasets: [{ data }] },
         options: {
-          scales: {
-            x: { display: false },
-            y: { display: false }
-          },
-          plugins: {
-            legend: { display: false }
-          }
+          scales: { x: { display: false }, y: { display: false } },
+          plugins: { legend: { display: false } }
         }
       });
     }
