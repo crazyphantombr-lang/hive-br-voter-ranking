@@ -4,24 +4,42 @@ const fetch = require("node-fetch");
 const TARGET = "hive-br.voter";
 
 async function getDelegations() {
-  const response = await fetch("https://api.peakd.com/raw", {
+  const query = `
+    select delegator, vesting_shares 
+    from hive_vesting_delegations 
+    where delegatee = '${TARGET}';
+  `;
+
+  const url = "https://db.ausbit.dev/query?q=" + encodeURIComponent(query);
+
+  const res = await fetch(url);
+  const json = await res.json();
+
+  // VESTS → HP converter
+  // HP = VESTS / 1e6 * Hive_Vesting_Share_Ratio
+  // Pegaremos o ratio automaticamente
+  const global = await fetch("https://api.hive.blog", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       jsonrpc: "2.0",
-      method: "bridge.get_account",
-      params: { account: TARGET },
+      method: "condenser_api.get_dynamic_global_properties",
+      params: [],
       id: 1
     })
-  });
+  }).then(r => r.json());
 
-  const json = await response.json();
-  if (!json.result || !json.result.delegations_in) return [];
+  const gp = global.result;
+  const totalVestingFund = parseFloat(gp.total_vesting_fund_hive.split(" ")[0]);
+  const totalVestingShares = parseFloat(gp.total_vesting_shares.split(" ")[0]);
+  const vestToHp = totalVestingFund / totalVestingShares;
 
-  return json.result.delegations_in.map(d => ({
-    delegator: d.delegator,
-    hp: d.amount / 1000 // converte de VEST para HP aproximado
+  const formatted = json.map(row => ({
+    delegator: row.delegator,
+    hp: parseFloat(row.vesting_shares) * vestToHp
   })).sort((a, b) => b.hp - a.hp);
+
+  return formatted;
 }
 
 async function run() {
@@ -30,7 +48,7 @@ async function run() {
     fs.writeFileSync("data/current.json", JSON.stringify(delegs, null, 2));
     console.log("✅ current.json atualizado com sucesso!");
   } catch (err) {
-    console.error("❌ Erro ao buscar delegações:", err.message);
+    console.error("❌ Erro:", err.message);
     fs.writeFileSync("data/current.json", "[]");
   }
 }
