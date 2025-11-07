@@ -3,15 +3,7 @@ const fs = require("fs");
 
 const client = new dhive.Client("https://api.hive.blog");
 
-// API mais estável: bridge.list_delegators
-async function getDelegators(delegatee) {
-  return await client.call("bridge", "list_delegators", {
-    account: delegatee,
-    limit: 1000
-  });
-}
-
-// Conversão VESTS → HP
+// Converte VESTS → HP
 async function getGlobalProps() {
   const props = await client.call("database_api", "get_dynamic_global_properties", {});
   return {
@@ -26,14 +18,23 @@ async function vestToHP(vest) {
 }
 
 async function run() {
-  const delegations = await getDelegators("hive-br.voter");
+  // Aqui está a API CERTA: lista delegadores que delegam PARA você
+  const account = await client.call("bridge", "get_account", { account: "hive-br.voter" });
+
+  if (!account.delegations_in) {
+    console.log("⚠️ Nenhuma delegação encontrada.");
+    fs.writeFileSync("data/current.json", "[]");
+    return;
+  }
+
   const list = [];
 
-  for (const d of delegations) {
+  for (const d of account.delegations_in) {
     const hp = await vestToHP(parseFloat(d.vesting_shares));
     list.push({ delegator: d.delegator, hp });
   }
 
+  // Ordena do maior para o menor
   list.sort((a, b) => b.hp - a.hp);
 
   fs.writeFileSync("data/current.json", JSON.stringify(list, null, 2));
