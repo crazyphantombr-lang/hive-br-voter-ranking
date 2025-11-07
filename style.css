@@ -1,0 +1,8 @@
+body { background:#0a0a0f; color:#e6e6ff; font-family:Arial, sans-serif; }
+h1 { color:#9d4eff; text-align:center; margin-top:20px; }
+table { width:90%; margin:20px auto; border-collapse:collapse; font-size:16px; }
+th, td { padding:10px 14px; border-bottom:1px solid #222; }
+th { background:#120a1b; color:#9d4eff; text-transform:uppercase; }
+tr:hover { background:#1a1130; }
+.hp-value { color:#4dff91; font-weight:bold; }
+canvas { width:120px; height:40px; }
