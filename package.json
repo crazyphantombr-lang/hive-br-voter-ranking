@@ -1,3 +1,7 @@
 {
-  "type": "commonjs"
+  "name": "hive-br-voter-ranking",
+  "type": "commonjs",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
 }
