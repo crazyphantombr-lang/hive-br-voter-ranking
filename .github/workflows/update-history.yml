@@ -1,0 +1,35 @@
+name: Update Delegation Data
+
+on:
+  schedule:
+    - cron: "0 */6 * * *" # Atualiza a cada 6 horas
+  workflow_dispatch: # permite rodar manual
+  push:
+    branches: [ "main" ]
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Fetch delegations
+        run: node scripts/fetch_delegations.js > data/current.json
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data/current.json
+          git commit -m "Atualização automática do ranking" || echo "Sem mudanças"
+          git push
