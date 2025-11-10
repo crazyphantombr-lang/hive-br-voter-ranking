@@ -1,36 +1,37 @@
-name: Update Delegation Data
+name: Update History
 
 on:
   schedule:
     - cron: "0 */6 * * *" # Atualiza a cada 6 horas
-  workflow_dispatch: # permite rodar manual
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  update-data:
+  update:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Use Node
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
 
       - name: Fetch delegations
-        run: node scripts/fetch_delegations.js
+        run: node scripts/fetch_delegations.js > data/current.json
+
+      - name: Merge history
+        run: node scripts/merge_history.js
 
       - name: Commit changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add data/current.json
+          git pull --rebase https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }} main || true
           git add data/history.json
-          git commit -m "Atualização automática do ranking" || echo "Sem mudanças"
-          git push
+          git commit -m "Atualização automática diária" || echo "Nada para atualizar"
+          git push https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }} HEAD:main
