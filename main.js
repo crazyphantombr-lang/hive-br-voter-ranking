@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 1.1.1
- * Description: Carrega ranking e desenha gráficos históricos com Chart.js
+ * Version: 1.2.0
+ * Description: Carrega ranking, desenha gráficos e aplica regras de bônus (Ouro/Prata/Bronze)
  */
 
 async function loadRanking() {
@@ -17,7 +17,6 @@ async function loadRanking() {
     if (!resCurrent.ok) throw new Error("Erro ao carregar current.json");
     
     const delegations = await resCurrent.json();
-    // Se o history falhar (ex: primeira vez), usa objeto vazio
     const historyData = resHistory.ok ? await resHistory.json() : {};
 
     const tbody = document.getElementById("ranking-body");
@@ -26,22 +25,28 @@ async function loadRanking() {
     delegations.forEach((user, index) => {
       const delegator = user.delegator;
       const hp = user.hp;
+      const rank = index + 1; // Ranking começa em 1, não 0
       
       const tr = document.createElement("tr");
 
-      // Prepara célula do gráfico
-      // Usamos um ID único para o canvas baseada no nome do usuário
+      // ID único para o canvas
       const canvasId = `chart-${delegator}`;
+
+      // Calcula o HTML do Bônus
+      const bonusHtml = getBonusBadge(rank);
 
       tr.innerHTML = `
         <td>
-          <span style="margin-right:10px; font-weight:bold; color:#666;">#${index + 1}</span>
+          <span style="margin-right:10px; font-weight:bold; color:#666;">#${rank}</span>
           <img src="https://images.hive.blog/u/${delegator}/avatar/small" 
                style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;">
           <a href="https://peakd.com/@${delegator}" target="_blank">@${delegator}</a>
         </td>
         <td style="font-weight:bold;">
             ${hp.toLocaleString("pt-BR", { minimumFractionDigits: 3 })} HP
+        </td>
+        <td>
+            ${bonusHtml}
         </td>
         <td style="width: 150px; height: 60px;">
             <canvas id="${canvasId}" width="140" height="50"></canvas>
@@ -50,7 +55,7 @@ async function loadRanking() {
 
       tbody.appendChild(tr);
 
-      // Renderiza o gráfico se houver histórico para este usuário
+      // Renderiza o gráfico se houver histórico
       if (historyData[delegator]) {
         renderSparkline(canvasId, historyData[delegator]);
       }
@@ -62,33 +67,51 @@ async function loadRanking() {
 }
 
 /**
+ * Determina a etiqueta de bônus baseada no Ranking
+ * 1-10: +20% (Ouro)
+ * 11-20: +15% (Prata)
+ * 21-30: +10% (Bronze)
+ * 31-40: +5% (Honra/Medalha)
+ */
+function getBonusBadge(rank) {
+  if (rank <= 10) {
+    return `<span class="bonus-tag bonus-gold">+20%</span>`;
+  } else if (rank <= 20) {
+    return `<span class="bonus-tag bonus-silver">+15%</span>`;
+  } else if (rank <= 30) {
+    return `<span class="bonus-tag bonus-bronze">+10%</span>`;
+  } else if (rank <= 40) {
+    return `<span class="bonus-tag bonus-honor">+5%</span>`;
+  } else {
+    return `<span style="color:#444; font-size:0.8rem;">—</span>`;
+  }
+}
+
+/**
  * Função auxiliar para desenhar o gráfico Sparkline
- * Remove eixos e legendas para caber na tabela limpa
  */
 function renderSparkline(canvasId, userHistoryObj) {
   const ctx = document.getElementById(canvasId).getContext('2d');
   
-  // Transforma objeto {"2023-01-01": 100, ...} em arrays ordenados
   const sortedDates = Object.keys(userHistoryObj).sort();
   const values = sortedDates.map(date => userHistoryObj[date]);
 
-  // Cor da linha baseada na tendência (Subiu ou desceu no último dia?)
   const lastValue = values[values.length - 1];
   const penLastValue = values.length > 1 ? values[values.length - 2] : lastValue;
-  const color = lastValue >= penLastValue ? '#28a745' : '#dc3545'; // Verde ou Vermelho
+  const color = lastValue >= penLastValue ? '#28a745' : '#dc3545';
 
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: sortedDates, // Necessário para o eixo X, mesmo oculto
+      labels: sortedDates,
       datasets: [{
         data: values,
         borderColor: color,
         borderWidth: 2,
         fill: false,
-        pointRadius: 0, // Remove bolinhas dos pontos para visual limpo
+        pointRadius: 0,
         pointHoverRadius: 4,
-        tension: 0.1 // Suavização leve da linha
+        tension: 0.1
       }]
     },
     options: {
@@ -96,11 +119,11 @@ function renderSparkline(canvasId, userHistoryObj) {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { enabled: true } // Mantém tooltip para ver valores ao passar mouse
+        tooltip: { enabled: true }
       },
       scales: {
-        x: { display: false }, // Oculta eixo X
-        y: { display: false }  // Oculta eixo Y
+        x: { display: false },
+        y: { display: false }
       },
       layout: {
         padding: 5
@@ -109,5 +132,4 @@ function renderSparkline(canvasId, userHistoryObj) {
   });
 }
 
-// Inicia aplicação
 document.addEventListener("DOMContentLoaded", loadRanking);
