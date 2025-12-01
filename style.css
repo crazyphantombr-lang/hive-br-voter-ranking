@@ -1,8 +1,151 @@
-body { background:#0a0a0f; color:#e6e6ff; font-family:Arial, sans-serif; }
-h1 { color:#9d4eff; text-align:center; margin-top:20px; }
-table { width:90%; margin:20px auto; border-collapse:collapse; font-size:16px; }
-th, td { padding:10px 14px; border-bottom:1px solid #222; }
-th { background:#120a1b; color:#9d4eff; text-transform:uppercase; }
-tr:hover { background:#1a1130; }
-.hp-value { color:#4dff91; font-weight:bold; }
-canvas { width:120px; height:40px; }
+/**
+ * Stylesheet: Hive BR Ranking Theme
+ * Version: 1.1.1
+ * Theme: Dark Modern / Cyberpunk Lite
+ */
+
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-card: #13131f;
+  --accent-purple: #9d4eff;
+  --accent-green: #4dff91;
+  --text-main: #e6e6ff;
+  --text-muted: #a3a3cc;
+  --border-color: #2a2a35;
+  --glow-shadow: 0 0 10px rgba(157, 78, 255, 0.3);
+}
+
+body {
+  background-color: var(--bg-dark);
+  /* Sutil gradiente de fundo para profundidade */
+  background-image: radial-gradient(circle at 50% 0%, #1a1025 0%, var(--bg-dark) 80%);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+h1 {
+  color: var(--accent-purple);
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 40px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: var(--glow-shadow);
+  text-transform: uppercase;
+  font-size: 2.2rem;
+}
+
+/* Container da Tabela para dar o efeito de "Card" */
+table {
+  width: 100%;
+  max-width: 900px; /* Limita a largura em telas gigantes */
+  margin: 0 auto;
+  border-collapse: separate; /* Necessário para border-radius funcionar */
+  border-spacing: 0;
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden; /* Corta as pontas quadradas internas */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+}
+
+thead {
+  background-color: #1a1130;
+}
+
+th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--accent-purple);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 800;
+  border-bottom: 2px solid var(--accent-purple);
+  
+  /* Mantém o cabeçalho fixo se a tabela for muito longa */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #1a1130; /* Necessário para o sticky não ficar transparente */
+}
+
+td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+  font-size: 1rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+/* Remove a borda da última linha para ficar limpo */
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Efeito de Hover nas linhas */
+tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(157, 78, 255, 0.08); /* Roxo muito suave */
+}
+
+tbody tr:hover td {
+  color: #fff; /* Texto fica branco brilhante ao passar o mouse */
+}
+
+/* Links (Nomes dos usuários) */
+a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--accent-purple);
+  text-decoration: underline;
+}
+
+/* Coluna de HP (Destaque) */
+td:nth-child(2) {
+  color: var(--accent-green);
+  font-family: "Courier New", Courier, monospace; /* Fonte monoespaçada para alinhar números */
+  font-weight: bold;
+  letter-spacing: -0.5px;
+}
+
+/* Ajustes nas imagens/avatar (caso o estilo inline falhe ou para reforçar) */
+td img {
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  border: 1px solid var(--border-color);
+}
+
+/* Ajuste do Canvas (Gráfico) */
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+/* Responsividade para Celulares */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  th, td {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+  
+  /* Ocultar o gráfico em telas muito pequenas se necessário, ou ajustar tamanho */
+  canvas {
+    width: 80px !important;
+  }
+}
