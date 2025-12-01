@@ -11,7 +11,7 @@ async function loadRanking() {
     // Busca paralela para performance
     const [resCurrent, resHistory] = await Promise.all([
       fetch(`${BASE_URL}/current.json`),
-      fetch(`${BASE_URL}/history.json`)
+      fetch(`${BASE_URL}/ranking_history.json`)
     ]);
 
     if (!resCurrent.ok) throw new Error("Erro ao carregar current.json");
