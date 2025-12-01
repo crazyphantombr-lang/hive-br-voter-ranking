@@ -2,8 +2,11 @@ name: Update History
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # Atualiza a cada 6 horas
-  workflow_dispatch:
+    - cron: "0 */6 * * *" # A cada 6 horas
+  workflow_dispatch:      # Permite rodar manualmente pelo botão
+
+permissions:
+  contents: write         # PERMISSÃO CRÍTICA: Permite salvar o arquivo
 
 jobs:
   update:
@@ -13,25 +16,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Use Node
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install Dependencies
+        run: npm install node-fetch
 
-      - name: Fetch delegations
+      - name: Fetch Delegations (Step 1)
         run: node scripts/fetch_delegations.js
 
-      - name: Merge history
+      - name: Merge History (Step 2)
         run: node scripts/merge_history.js
 
-      - name: Commit changes
+      - name: Commit and Push
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git pull --rebase https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }} main || true
-          git add data/history.json
-          git commit -m "Atualização automática diária" || echo "Nada para atualizar"
-          git push https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Adiciona todos os arquivos na pasta data
+          git add data/*.json
+          
+          # Verifica se há algo para commitar antes de tentar
+          if git diff --staged --quiet; then
+            echo "Nenhuma mudança detectada no histórico."
+          else
+            git commit -m "Auto: Atualização de histórico [skip ci]"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
