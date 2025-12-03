@@ -2,24 +2,52 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Ranking do Projeto Hive BR 🇧🇷</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hive BR • Delegator Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script defer src="main.js"></script>
 </head>
 <body>
-  <h1>Ranking do Projeto Hive BR 🇧🇷</h1>
+  
+  <div class="container">
+    <header>
+      <div class="last-updated" id="last-updated">Carregando dados...</div>
+      <h1>HIVE BR <span class="highlight">DASHBOARD</span></h1>
+      <p class="subtitle">Ranking de Curadoria e Estatísticas em Tempo Real</p>
+    </header>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Delegador</th>
-        <th>HP</th>
-        <th>Bônus</th> <th>Histórico</th>
-      </tr>
-    </thead>
-    <tbody id="ranking-body"></tbody>
-  </table>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Delegado</h3>
+        <p id="stat-total-hp">0 HP</p>
+      </div>
+      <div class="stat-card">
+        <h3>Delegadores</h3>
+        <p id="stat-count">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Top Crescimento (24h)</h3>
+        <p id="stat-growth">—</p>
+      </div>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="🔍 Buscar delegador..." autocomplete="off">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Delegador</th>
+          <th>HP Total</th>
+          <th>Bônus</th>
+          <th>Histórico</th>
+        </tr>
+      </thead>
+      <tbody id="ranking-body"></tbody>
+    </table>
+  </div>
 
 </body>
 </html>
