@@ -1,7 +1,7 @@
 /**
  * Stylesheet: Hive BR Dashboard Theme
- * Version: 1.3.0
- * Theme: Cyberpunk Clean
+ * Version: 1.4.0
+ * Update: Added Veteran Badge styles
  */
 
 :root {
@@ -24,161 +24,55 @@ body {
   padding: 20px;
 }
 
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-}
+.container { max-width: 900px; margin: 0 auto; }
 
-/* --- HEADER --- */
-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
+header { text-align: center; margin-bottom: 40px; }
+h1 { font-size: 2.5rem; margin: 10px 0; color: #fff; letter-spacing: 2px; }
+.highlight { color: var(--accent-purple); text-shadow: 0 0 15px rgba(157, 78, 255, 0.4); }
+.subtitle { color: var(--text-muted); font-size: 1rem; margin-top: 0; }
+.last-updated { font-size: 0.8rem; color: var(--accent-green); font-family: monospace; margin-bottom: 10px; opacity: 0.8; }
 
-h1 {
-  font-size: 2.5rem;
-  margin: 10px 0;
-  color: #fff;
-  letter-spacing: 2px;
-}
-
-.highlight {
-  color: var(--accent-purple);
-  text-shadow: 0 0 15px rgba(157, 78, 255, 0.4);
-}
-
-.subtitle {
-  color: var(--text-muted);
-  font-size: 1rem;
-  margin-top: 0;
-}
-
-.last-updated {
-  font-size: 0.8rem;
-  color: var(--accent-green);
-  font-family: monospace;
-  margin-bottom: 10px;
-  opacity: 0.8;
-}
-
-/* --- STATS CARDS --- */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-.stat-card h3 {
-  margin: 0 0 10px 0;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.stat-card p {
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #fff;
-}
-
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.stat-card h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.stat-card p { margin: 0; font-size: 1.8rem; font-weight: 800; color: #fff; }
 #stat-total-hp { color: var(--accent-purple); }
 #stat-growth { color: var(--accent-green); }
 
-/* --- SEARCH BAR --- */
-.search-container {
-  margin-bottom: 20px;
-}
+.search-container { margin-bottom: 20px; }
+#search-input { width: 100%; padding: 15px; font-size: 1rem; background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 12px; color: #fff; box-sizing: border-box; transition: all 0.3s ease; }
+#search-input:focus { outline: none; border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(157, 78, 255, 0.2); }
 
-#search-input {
-  width: 100%;
-  padding: 15px;
-  font-size: 1rem;
-  background: var(--bg-card);
-  border: 2px solid var(--border-color);
-  border-radius: 12px;
-  color: #fff;
-  box-sizing: border-box; /* Garante que padding não estoure a largura */
-  transition: all 0.3s ease;
-}
+table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+th { padding: 16px 20px; text-align: left; color: var(--accent-purple); text-transform: uppercase; font-size: 0.85rem; border-bottom: 2px solid var(--border-color); background-color: #151525; }
+td { padding: 14px 20px; border-bottom: 1px solid var(--border-color); vertical-align: middle; color: var(--text-muted); }
+tr:hover { background-color: rgba(157, 78, 255, 0.05); }
+tr:hover td { color: #fff; }
+a { color: #fff; text-decoration: none; font-weight: 600; }
 
-#search-input:focus {
-  outline: none;
-  border-color: var(--accent-purple);
-  box-shadow: 0 0 15px rgba(157, 78, 255, 0.2);
-}
-
-/* --- TABLE --- */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: var(--bg-card);
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-}
-
-th {
-  padding: 16px 20px;
-  text-align: left;
-  color: var(--accent-purple);
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  border-bottom: 2px solid var(--border-color);
-  background-color: #151525;
-}
-
-td {
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border-color);
-  vertical-align: middle;
-  color: var(--text-muted);
-}
-
-tr:hover {
-  background-color: rgba(157, 78, 255, 0.05);
-}
-
-tr:hover td {
-  color: #fff;
-}
-
-a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-/* Bonus Tags Styles */
-.bonus-tag {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  border: 1px solid transparent;
-}
+.bonus-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; border: 1px solid transparent; }
 .bonus-gold { color: #ffd700; border-color: #ffd700; background: rgba(255, 215, 0, 0.1); }
 .bonus-silver { color: #c0c0c0; border-color: #c0c0c0; background: rgba(192, 192, 192, 0.1); }
 .bonus-bronze { color: #cd7f32; border-color: #cd7f32; background: rgba(205, 127, 50, 0.1); }
 .bonus-honor { color: var(--accent-blue); border-color: var(--accent-blue); background: rgba(77, 166, 255, 0.1); }
 
-/* Responsividade */
+/* Badge de Veterano */
+.veteran-badge {
+  color: #ff9f43;
+  border: 1px solid #ff9f43;
+  background: rgba(255, 159, 67, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  margin-left: 5px;
+  vertical-align: middle;
+  cursor: help;
+}
+
 @media (max-width: 600px) {
   h1 { font-size: 1.8rem; }
   .stats-grid { grid-template-columns: 1fr; }
   th, td { padding: 10px; font-size: 0.85rem; }
-  canvas { width: 80px !important; }
+  canvas { width: 80px !impo
+    rtant; }
 }
