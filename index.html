@@ -12,9 +12,9 @@
   
   <div class="container">
     <header>
-      <div class="last-updated" id="last-updated">Carregando dados...</div>
+      <div class="last-updated" id="last-updated">Carregando...</div>
       <h1>HIVE BR <span class="highlight">DASHBOARD</span></h1>
-      <p class="subtitle">Ranking de Curadoria e Estatísticas em Tempo Real</p>
+      <p class="subtitle">Ranking de Curadoria e Estatísticas</p>
     </header>
 
     <div class="stats-grid">
@@ -27,9 +27,23 @@
         <p id="stat-count">0</p>
       </div>
       <div class="stat-card">
-        <h3>Top Crescimento (24h)</h3>
-        <p id="stat-growth">—</p>
+        <h3>Destaque do Mês</h3> <p id="stat-growth">—</p>
       </div>
+    </div>
+
+    <div id="activity-panel" class="activity-container" style="display:none;">
+      <h3 class="section-title">⚡ Últimas Alterações (24h)</h3>
+      <table class="activity-table">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Antes</th>
+            <th>Agora</th>
+            <th>Diferença</th>
+          </tr>
+        </thead>
+        <tbody id="activity-body"></tbody>
+      </table>
     </div>
 
     <div class="search-container">
@@ -41,7 +55,7 @@
         <tr>
           <th>Delegador</th>
           <th>HP Total</th>
-          <th>Tempo</th> <th>Bônus</th>
+          <th>Tempo (Local)</th> <th>Bônus</th>
           <th>Histórico</th>
         </tr>
       </thead>
