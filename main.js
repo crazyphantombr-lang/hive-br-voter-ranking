@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 1.5.0
- * Description: Adiciona painel de alterações recentes e corrige fidelidade via histórico local
+ * Version: 1.5.1
+ * Description: Ajuste no filtro de 'Alterações Recentes' para ignorar inflação natural (Vest Drift)
  */
 
 async function loadDashboard() {
@@ -21,7 +21,7 @@ async function loadDashboard() {
     const metaData = resMeta.ok ? await resMeta.json() : null;
 
     updateStats(delegations, metaData, historyData);
-    renderRecentActivity(delegations, historyData);
+    renderRecentActivity(delegations, historyData); // Função ajustada abaixo
     renderTable(delegations, historyData);
     setupSearch();
 
@@ -31,7 +31,6 @@ async function loadDashboard() {
   }
 }
 
-// Stats agora foca no Mês (ou máximo disponível)
 function updateStats(delegations, meta, historyData) {
   const dateEl = document.getElementById("last-updated");
   if (meta && meta.last_updated) {
@@ -44,15 +43,13 @@ function updateStats(delegations, meta, historyData) {
     totalHP.toLocaleString("pt-BR", { maximumFractionDigits: 0 }) + " HP";
   document.getElementById("stat-count").innerText = delegations.length;
 
-  // Lógica "Destaque do Mês"
+  // Destaque do Mês
   let bestGrower = { name: "—", val: 0 };
   
   delegations.forEach(user => {
     const hist = historyData[user.delegator];
     if (hist) {
       const dates = Object.keys(hist).sort();
-      // Pega o dado mais antigo possível (idealmente 30 dias atrás)
-      // Como o histórico é novo, ele vai pegar o primeiro dia que tiver.
       const firstDate = dates[0]; 
       const lastDate = dates[dates.length - 1];
       
@@ -71,24 +68,30 @@ function updateStats(delegations, meta, historyData) {
   }
 }
 
-// NOVA FUNÇÃO: Renderiza quem mudou o saldo recentemente
+/**
+ * Renderiza Tabela de Movimentações
+ * APLICA FILTRO DE RUÍDO: Ignora mudanças menores que 2 HP (Inflação natural)
+ */
 function renderRecentActivity(delegations, historyData) {
   const container = document.getElementById("activity-panel");
   const tbody = document.getElementById("activity-body");
   const changes = [];
+  
+  // CONSTANTE DE CORTE: 
+  // Qualquer mudança menor que 2.0 HP é considerada "inflação natural" e escondida
+  const NOISE_THRESHOLD = 2.0; 
 
   delegations.forEach(user => {
     const hist = historyData[user.delegator];
     if (hist) {
       const dates = Object.keys(hist).sort();
-      // Precisamos de pelo menos 2 pontos para comparar
       if (dates.length >= 2) {
         const todayHP = hist[dates[dates.length - 1]];
         const yesterdayHP = hist[dates[dates.length - 2]];
         const diff = todayHP - yesterdayHP;
 
-        // Só mostra se houve mudança real (> 1 HP para evitar ruído de arredondamento)
-        if (Math.abs(diff) >= 1) {
+        // Só adiciona se a diferença absoluta for maior que o corte
+        if (Math.abs(diff) >= NOISE_THRESHOLD) {
           changes.push({
             name: user.delegator,
             old: yesterdayHP,
@@ -100,17 +103,16 @@ function renderRecentActivity(delegations, historyData) {
     }
   });
 
-  // Se não houver mudanças, esconde o painel
   if (changes.length === 0) {
     container.style.display = "none";
     return;
   }
 
   container.style.display = "block";
-  // Ordena pelas maiores mudanças (seja positiva ou negativa)
+  // Ordena pelas maiores mudanças
   changes.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
 
-  // Pega apenas top 5 para não poluir
+  // Mostra Top 5
   changes.slice(0, 5).forEach(change => {
     const tr = document.createElement("tr");
     const diffClass = change.diff > 0 ? "diff-positive" : "diff-negative";
@@ -126,16 +128,13 @@ function renderRecentActivity(delegations, historyData) {
   });
 }
 
-// Cálculo de Fidelidade CORRIGIDO (Usa histórico local)
 function calculateLoyalty(username, apiTimestamp, historyData) {
-  let startDate = new Date(); // Default hoje
+  let startDate = new Date(); 
 
-  // 1. Tenta pegar a data mais antiga do NOSSO histórico (Mais confiável)
   if (historyData[username]) {
     const dates = Object.keys(historyData[username]).sort();
     if (dates.length > 0) {
       const localFirstSeen = new Date(dates[0]);
-      // Se a data do histórico local for mais antiga que a da API (que resetou), usa a local
       if (apiTimestamp) {
         const apiDate = new Date(apiTimestamp);
         startDate = localFirstSeen < apiDate ? localFirstSeen : apiDate;
@@ -144,7 +143,6 @@ function calculateLoyalty(username, apiTimestamp, historyData) {
       }
     }
   } else if (apiTimestamp) {
-    // Se não tem histórico local, usa API (usuário novo)
     startDate = new Date(apiTimestamp);
   }
 
@@ -167,8 +165,6 @@ function renderTable(delegations, historyData) {
 
     const canvasId = `chart-${user.delegator}`;
     const bonusHtml = getBonusBadge(rank);
-    
-    // Usa a nova função de lealdade híbrida
     const loyalty = calculateLoyalty(user.delegator, user.timestamp, historyData);
     let durationHtml = loyalty.text;
     
