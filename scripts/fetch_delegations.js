@@ -1,7 +1,7 @@
 /**
- * Script: Fetch Delegations + Wealth + Hive-Engine Tokens
- * Version: 1.7.0
- * Update: Integração com Hive-Engine para buscar saldo de HBR
+ * Script: Fetch Delegations + Wealth + Hive-Engine Tokens (Stake Fix)
+ * Version: 1.7.1
+ * Update: Busca saldo em STAKE do token HBR (ignora liquido)
  */
 
 const fetch = require("node-fetch");
@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ACCOUNT = "hive-br.voter";
-const TOKEN_SYMBOL = "HBR"; // Token alvo
+const TOKEN_SYMBOL = "HBR";
 
 const HAF_API = `https://rpc.mahdiyari.info/hafsql/delegations/${ACCOUNT}/incoming?limit=300`;
 const HIVE_RPC = "https://api.deathwing.me";
@@ -21,7 +21,6 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// Layer 1: Hive RPC
 async function hiveRpc(method, params) {
   const response = await fetch(HIVE_RPC, {
     method: "POST",
@@ -32,9 +31,7 @@ async function hiveRpc(method, params) {
   return json.result;
 }
 
-// Layer 2: Hive-Engine RPC
 async function fetchHiveEngineBalances(accounts, symbol) {
-  // A Hive-Engine aceita buscar vários usuários de uma vez usando $in
   const query = {
     symbol: symbol,
     account: { "$in": accounts }
@@ -86,22 +83,22 @@ async function run() {
       wealthMap[acc.name] = ownVests * vestToHp;
     });
 
-    console.log(`3. 🪙 Buscando saldos de ${TOKEN_SYMBOL} na Hive-Engine...`);
+    console.log(`3. 🪙 Buscando STAKE de ${TOKEN_SYMBOL} na Hive-Engine...`);
     const heBalances = await fetchHiveEngineBalances(userNames, TOKEN_SYMBOL);
     
-    // Cria mapa { usuario: saldo }
     const tokenMap = {};
     heBalances.forEach(b => {
-      tokenMap[b.account] = parseFloat(b.balance);
+      // CORREÇÃO 1.7.1: Lendo o campo 'stake' em vez de 'balance'
+      const staked = parseFloat(b.stake || 0);
+      tokenMap[b.account] = staked;
     });
 
-    // 4. Fusão de Dados
     const finalData = delegationsData
       .map(item => ({
         delegator: item.delegator,
         delegated_hp: parseFloat(item.hp_equivalent),
         total_account_hp: wealthMap[item.delegator] || 0,
-        token_balance: tokenMap[item.delegator] || 0, // Novo Campo HBR
+        token_balance: tokenMap[item.delegator] || 0, // Agora guarda o Stake
         timestamp: item.timestamp
       }))
       .sort((a, b) => b.delegated_hp - a.delegated_hp);
@@ -113,11 +110,11 @@ async function run() {
       last_updated: new Date().toISOString(),
       total_delegators: finalData.length,
       total_hp: finalData.reduce((acc, curr) => acc + curr.delegated_hp, 0),
-      total_hbr_circulating: finalData.reduce((acc, curr) => acc + curr.token_balance, 0)
+      total_hbr_staked: finalData.reduce((acc, curr) => acc + curr.token_balance, 0)
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
 
-    console.log("✅ Dados salvos com Sucesso (HP + HBR)!");
+    console.log("✅ Dados salvos com Sucesso (HP + HBR Stake)!");
 
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
