@@ -1,428 +1,428 @@
 [
   {
     "delegator": "matheusggr",
-    "delegated_hp": 10229.973,
-    "total_account_hp": 28814.812491444467,
+    "delegated_hp": 10230.12,
+    "total_account_hp": 28815.2265015057,
     "token_balance": 2428.449,
     "timestamp": "2025-03-08T15:25:27.000Z"
   },
   {
     "delegator": "wiseagent",
-    "delegated_hp": 6750.472,
-    "total_account_hp": 75603.75488749976,
+    "delegated_hp": 6750.569,
+    "total_account_hp": 75604.8411591942,
     "token_balance": 200,
     "timestamp": "2025-12-05T14:29:03.000Z"
   },
   {
     "delegator": "rimurutempest",
-    "delegated_hp": 4402.682,
-    "total_account_hp": 8732.314769796716,
+    "delegated_hp": 4402.745,
+    "total_account_hp": 8732.440235342383,
     "token_balance": 200.20995677,
     "timestamp": "2025-11-28T00:58:24.000Z"
   },
   {
     "delegator": "tfranzini",
-    "delegated_hp": 3117.578,
-    "total_account_hp": 3956.4663980125024,
+    "delegated_hp": 3117.623,
+    "total_account_hp": 3956.5232443617956,
     "token_balance": 514.893,
     "timestamp": "2025-10-01T22:54:21.000Z"
   },
   {
     "delegator": "mengao",
-    "delegated_hp": 2017.261,
-    "total_account_hp": 32836.51590629373,
+    "delegated_hp": 2017.29,
+    "total_account_hp": 32841.63588745559,
     "token_balance": 200.80588465,
     "timestamp": "2025-08-27T17:56:09.000Z"
   },
   {
     "delegator": "michupa",
-    "delegated_hp": 1069.94,
-    "total_account_hp": 14044.745225311608,
+    "delegated_hp": 1069.955,
+    "total_account_hp": 14045.581235057949,
     "token_balance": 125.78072422,
     "timestamp": "2025-04-24T15:14:03.000Z"
   },
   {
     "delegator": "gwajnberg",
-    "delegated_hp": 1032.604,
-    "total_account_hp": 17512.30619433129,
+    "delegated_hp": 1032.619,
+    "total_account_hp": 17514.526013008537,
     "token_balance": 83.52200001,
     "timestamp": "2025-11-05T21:52:12.000Z"
   },
   {
     "delegator": "crazyphantombr",
-    "delegated_hp": 1022.862,
-    "total_account_hp": 14810.668184527656,
+    "delegated_hp": 1022.877,
+    "total_account_hp": 14810.88098360951,
     "token_balance": 297.70217843,
     "timestamp": "2025-07-20T23:19:24.000Z"
   },
   {
     "delegator": "kaibagt",
-    "delegated_hp": 1021.904,
-    "total_account_hp": 6713.891863065747,
+    "delegated_hp": 1021.918,
+    "total_account_hp": 6713.988327992672,
     "token_balance": 100.61831016,
     "timestamp": "2025-04-12T16:32:00.000Z"
   },
   {
     "delegator": "josiva",
-    "delegated_hp": 1020.148,
-    "total_account_hp": 4015.9285749320893,
+    "delegated_hp": 1020.162,
+    "total_account_hp": 4015.986275631537,
     "token_balance": 63.597,
     "timestamp": "2025-05-30T00:49:18.000Z"
   },
   {
     "delegator": "elderdark",
-    "delegated_hp": 1017.88,
-    "total_account_hp": 10530.503606373395,
+    "delegated_hp": 1017.895,
+    "total_account_hp": 10530.654908223587,
     "token_balance": 130.47239327,
     "timestamp": "2025-05-08T02:36:12.000Z"
   },
   {
     "delegator": "blessskateshop",
-    "delegated_hp": 1004.659,
-    "total_account_hp": 2445.7964948969275,
+    "delegated_hp": 1004.673,
+    "total_account_hp": 2447.5692227663626,
     "token_balance": 0,
     "timestamp": "2025-10-13T18:54:15.000Z"
   },
   {
     "delegator": "shiftrox",
-    "delegated_hp": 1000.696,
-    "total_account_hp": 20971.35002548211,
+    "delegated_hp": 1000.711,
+    "total_account_hp": 20974.079143536186,
     "token_balance": 150.333,
     "timestamp": "2025-11-26T19:53:03.000Z"
   },
   {
     "delegator": "pablito.saldo",
-    "delegated_hp": 618.345,
-    "total_account_hp": 3035.1143118654845,
+    "delegated_hp": 618.354,
+    "total_account_hp": 3035.233946452516,
     "token_balance": 51.915,
     "timestamp": "2024-12-02T00:41:12.000Z"
   },
   {
     "delegator": "ricestrela",
-    "delegated_hp": 609.938,
-    "total_account_hp": 2040.7075948350766,
+    "delegated_hp": 609.947,
+    "total_account_hp": 2040.759923489327,
     "token_balance": 60.33272072,
     "timestamp": "2025-06-09T13:27:48.000Z"
   },
   {
     "delegator": "xvlad",
-    "delegated_hp": 537.633,
-    "total_account_hp": 5756.57902530011,
+    "delegated_hp": 537.641,
+    "total_account_hp": 5756.937828517835,
     "token_balance": 0,
     "timestamp": "2023-07-08T22:07:09.000Z"
   },
   {
     "delegator": "legalizabrazil",
-    "delegated_hp": 536.599,
-    "total_account_hp": 695.4530143867,
+    "delegated_hp": 536.607,
+    "total_account_hp": 695.4630066275017,
     "token_balance": 0,
     "timestamp": "2023-08-01T15:46:45.000Z"
   },
   {
     "delegator": "lobaobh",
-    "delegated_hp": 410.967,
-    "total_account_hp": 686.0095103020911,
+    "delegated_hp": 410.973,
+    "total_account_hp": 686.0253688885294,
     "token_balance": 57.858,
     "timestamp": "2025-01-11T17:39:45.000Z"
   },
   {
     "delegator": "coyotelation",
-    "delegated_hp": 408.542,
-    "total_account_hp": 3366.2683675430603,
+    "delegated_hp": 408.548,
+    "total_account_hp": 3366.3167339509064,
     "token_balance": 31.038,
     "timestamp": "2025-03-27T23:04:48.000Z"
   },
   {
     "delegator": "markitoelias",
-    "delegated_hp": 226.34,
-    "total_account_hp": 264.38771552944013,
+    "delegated_hp": 226.344,
+    "total_account_hp": 264.3915142414508,
     "token_balance": 0,
     "timestamp": "2025-10-05T22:33:33.000Z"
   },
   {
     "delegator": "nane-qts",
-    "delegated_hp": 223.654,
-    "total_account_hp": 628.0643237601581,
+    "delegated_hp": 223.657,
+    "total_account_hp": 628.0733477629766,
     "token_balance": 15.889,
     "timestamp": "2025-05-23T14:15:15.000Z"
   },
   {
     "delegator": "thomashnblum",
-    "delegated_hp": 216.53,
-    "total_account_hp": 598.2008009362329,
+    "delegated_hp": 216.534,
+    "total_account_hp": 598.2093958611624,
     "token_balance": 26.461,
     "timestamp": "2023-04-15T20:46:24.000Z"
   },
   {
     "delegator": "viniciotricolor",
-    "delegated_hp": 215.278,
-    "total_account_hp": 1043.704743285257,
+    "delegated_hp": 215.281,
+    "total_account_hp": 1043.7397458005296,
     "token_balance": 27.123,
     "timestamp": "2023-06-26T04:36:27.000Z"
   },
   {
     "delegator": "syel25",
-    "delegated_hp": 212.912,
-    "total_account_hp": 2121.8717096655305,
+    "delegated_hp": 212.915,
+    "total_account_hp": 2121.9021966324926,
     "token_balance": 0,
     "timestamp": "2023-11-06T16:28:12.000Z"
   },
   {
     "delegator": "felipefabar",
-    "delegated_hp": 210.724,
-    "total_account_hp": 969.5375796523928,
+    "delegated_hp": 210.727,
+    "total_account_hp": 969.5515099291501,
     "token_balance": 0,
     "timestamp": "2024-03-14T18:26:15.000Z"
   },
   {
     "delegator": "wagnertamanaha",
-    "delegated_hp": 200.71,
-    "total_account_hp": 3989.2259670024305,
+    "delegated_hp": 200.713,
+    "total_account_hp": 3989.2832840398864,
     "token_balance": 0,
     "timestamp": "2025-10-25T21:59:12.000Z"
   },
   {
     "delegator": "lincemarrom",
-    "delegated_hp": 161.36,
-    "total_account_hp": 740.2045271460713,
+    "delegated_hp": 161.362,
+    "total_account_hp": 740.2151623747995,
     "token_balance": 26.76524818,
     "timestamp": "2023-07-03T15:50:48.000Z"
   },
   {
     "delegator": "reibar",
-    "delegated_hp": 155.03,
-    "total_account_hp": 337.8133601164653,
+    "delegated_hp": 155.033,
+    "total_account_hp": 337.8182138051696,
     "token_balance": 25.58,
     "timestamp": "2023-11-12T19:48:36.000Z"
   },
   {
     "delegator": "sinvistaalsol",
-    "delegated_hp": 154.788,
-    "total_account_hp": 154.95994349750075,
+    "delegated_hp": 154.791,
+    "total_account_hp": 154.9621699557057,
     "token_balance": 0,
     "timestamp": "2025-03-20T15:57:30.000Z"
   },
   {
     "delegator": "jaopalas",
-    "delegated_hp": 117.126,
-    "total_account_hp": 301.8047865325075,
+    "delegated_hp": 117.128,
+    "total_account_hp": 301.8091228514819,
     "token_balance": 3.261,
     "timestamp": "2025-04-30T15:51:42.000Z"
   },
   {
     "delegator": "dreloop07",
-    "delegated_hp": 108.89,
-    "total_account_hp": 3212.601781009064,
+    "delegated_hp": 108.891,
+    "total_account_hp": 3212.6479395416054,
     "token_balance": 0,
     "timestamp": "2023-03-24T18:54:27.000Z"
   },
   {
     "delegator": "underlock",
-    "delegated_hp": 108.576,
-    "total_account_hp": 9686.164477724262,
+    "delegated_hp": 108.578,
+    "total_account_hp": 9717.110036980112,
     "token_balance": 25.31899872,
     "timestamp": "2023-03-10T21:57:33.000Z"
   },
   {
     "delegator": "imagemvirtual",
-    "delegated_hp": 108.489,
-    "total_account_hp": 125.68802304849324,
+    "delegated_hp": 108.491,
+    "total_account_hp": 125.6898289289283,
     "token_balance": 0,
     "timestamp": "2023-03-20T21:30:03.000Z"
   },
   {
     "delegator": "giovanalrico",
-    "delegated_hp": 108.489,
-    "total_account_hp": 122.85976381899344,
+    "delegated_hp": 108.491,
+    "total_account_hp": 122.8615290631142,
     "token_balance": 0,
     "timestamp": "2023-03-20T21:31:24.000Z"
   },
   {
     "delegator": "mauriciolimax",
-    "delegated_hp": 107.506,
-    "total_account_hp": 1860.7058868477382,
+    "delegated_hp": 107.508,
+    "total_account_hp": 1860.7326213947138,
     "token_balance": 13.611,
     "timestamp": "2023-07-11T05:34:00.000Z"
   },
   {
     "delegator": "hellene8",
-    "delegated_hp": 101.7,
-    "total_account_hp": 1071.1185312219409,
+    "delegated_hp": 101.702,
+    "total_account_hp": 1071.1339210097046,
     "token_balance": 5.601,
     "timestamp": "2025-05-18T19:45:27.000Z"
   },
   {
     "delegator": "ogechukwu-martha",
-    "delegated_hp": 101.411,
-    "total_account_hp": 174.95413195956957,
+    "delegated_hp": 101.412,
+    "total_account_hp": 174.9566456934662,
     "token_balance": 0,
     "timestamp": "2025-06-22T17:25:42.000Z"
   },
   {
     "delegator": "eii",
-    "delegated_hp": 100.369,
-    "total_account_hp": 5174.042342428852,
+    "delegated_hp": 100.37,
+    "total_account_hp": 5174.116682860103,
     "token_balance": 0,
     "timestamp": "2025-10-24T10:50:09.000Z"
   },
   {
     "delegator": "d35tr0",
-    "delegated_hp": 74.652,
-    "total_account_hp": 167.18737044622378,
+    "delegated_hp": 74.653,
+    "total_account_hp": 167.18977258760492,
     "token_balance": 0,
     "timestamp": "2023-10-16T00:16:06.000Z"
   },
   {
     "delegator": "arthursiq5",
-    "delegated_hp": 71.891,
-    "total_account_hp": 254.6443305778107,
+    "delegated_hp": 71.892,
+    "total_account_hp": 254.64798929726015,
     "token_balance": 13.915,
     "timestamp": "2023-08-03T20:49:00.000Z"
   },
   {
     "delegator": "casagrande",
-    "delegated_hp": 60.213,
-    "total_account_hp": 66.57155207140771,
+    "delegated_hp": 60.214,
+    "total_account_hp": 66.57250856877717,
     "token_balance": 5.03961038,
     "timestamp": "2025-10-25T21:41:48.000Z"
   },
   {
     "delegator": "matheusggr.leo",
-    "delegated_hp": 54.249,
-    "total_account_hp": 134.16449646860767,
+    "delegated_hp": 54.25,
+    "total_account_hp": 134.16642413867024,
     "token_balance": 0,
     "timestamp": "2023-03-20T01:27:27.000Z"
   },
   {
     "delegator": "zombialien",
-    "delegated_hp": 52.343,
-    "total_account_hp": 316.32843517351654,
+    "delegated_hp": 52.344,
+    "total_account_hp": 316.33298016768765,
     "token_balance": 0,
     "timestamp": "2024-06-03T20:55:39.000Z"
   },
   {
     "delegator": "captainman",
-    "delegated_hp": 52.232,
-    "total_account_hp": 1224.2465361451257,
+    "delegated_hp": 52.233,
+    "total_account_hp": 1224.2641260698751,
     "token_balance": 0,
     "timestamp": "2024-06-28T21:57:57.000Z"
   },
   {
     "delegator": "adncabrera",
     "delegated_hp": 51.31,
-    "total_account_hp": 786.0479777065949,
+    "total_account_hp": 786.1092847419795,
     "token_balance": 0.501,
     "timestamp": "2025-01-28T01:16:24.000Z"
   },
   {
     "delegator": "grafvisionsp",
     "delegated_hp": 50.37,
-    "total_account_hp": 1344.125410362069,
+    "total_account_hp": 1344.1447227016379,
     "token_balance": 0,
     "timestamp": "2025-09-11T12:45:39.000Z"
   },
   {
     "delegator": "ladyaryastark",
     "delegated_hp": 50.079,
-    "total_account_hp": 2285.830463548032,
+    "total_account_hp": 2298.392448644857,
     "token_balance": 0,
     "timestamp": "2025-11-15T22:00:00.000Z"
   },
   {
     "delegator": "hive-br.leo",
-    "delegated_hp": 44.099,
-    "total_account_hp": 45.173623589338256,
+    "delegated_hp": 44.1,
+    "total_account_hp": 45.174272642136145,
     "token_balance": 0,
     "timestamp": "2023-07-26T03:22:42.000Z"
   },
   {
     "delegator": "ogepaul1986",
-    "delegated_hp": 34.21,
-    "total_account_hp": 39.23177179316287,
+    "delegated_hp": 34.211,
+    "total_account_hp": 39.23233547367432,
     "token_balance": 0,
     "timestamp": "2025-10-16T21:18:42.000Z"
   },
   {
     "delegator": "speedtuning",
-    "delegated_hp": 32.077,
-    "total_account_hp": 500.6148835590873,
+    "delegated_hp": 32.078,
+    "total_account_hp": 500.62207637350025,
     "token_balance": 0,
     "timestamp": "2023-09-14T22:47:57.000Z"
   },
   {
     "delegator": "us3incanada",
     "delegated_hp": 30.01,
-    "total_account_hp": 49.753136949701016,
+    "total_account_hp": 49.75385180076177,
     "token_balance": 0,
     "timestamp": "2025-12-02T01:50:39.000Z"
   },
   {
     "delegator": "boeltermc",
     "delegated_hp": 21.255,
-    "total_account_hp": 3288.9104596715847,
+    "total_account_hp": 3288.976721023361,
     "token_balance": 0,
     "timestamp": "2023-11-27T22:00:54.000Z"
   },
   {
     "delegator": "keepkeybr",
-    "delegated_hp": 13.878,
-    "total_account_hp": 15.119273842993275,
+    "delegated_hp": 13.879,
+    "total_account_hp": 15.119491076108755,
     "token_balance": 0,
     "timestamp": "2023-10-03T15:07:09.000Z"
   },
   {
     "delegator": "name0",
     "delegated_hp": 10.448,
-    "total_account_hp": 345.92272343877045,
+    "total_account_hp": 345.9276936424792,
     "token_balance": 0,
     "timestamp": "2024-06-26T23:01:42.000Z"
   },
   {
     "delegator": "sieghard1990",
     "delegated_hp": 10.306,
-    "total_account_hp": 196.28972227892675,
+    "total_account_hp": 196.29454324126795,
     "token_balance": 0,
     "timestamp": "2024-12-01T13:37:30.000Z"
   },
   {
     "delegator": "v-36",
     "delegated_hp": 10.126,
-    "total_account_hp": 96.27798849235863,
+    "total_account_hp": 96.2793718106059,
     "token_balance": 0.614,
     "timestamp": "2025-07-10T10:59:54.000Z"
   },
   {
     "delegator": "manopunkttt",
     "delegated_hp": 10.087,
-    "total_account_hp": 93.17200405107162,
+    "total_account_hp": 93.17334274265998,
     "token_balance": 0,
     "timestamp": "2025-08-26T22:39:30.000Z"
   },
   {
     "delegator": "emviagem",
     "delegated_hp": 9.496,
-    "total_account_hp": 9.94160237823384,
+    "total_account_hp": 9.941745218774988,
     "token_balance": 0,
     "timestamp": "2025-04-10T10:02:57.000Z"
   },
   {
     "delegator": "claytonlins",
     "delegated_hp": 6.1,
-    "total_account_hp": 7.256557868534643,
+    "total_account_hp": 7.256662130464801,
     "token_balance": 0,
     "timestamp": "2025-12-02T01:48:33.000Z"
   },
   {
     "delegator": "jkatrina",
     "delegated_hp": 1.917,
-    "total_account_hp": 20.062333512512705,
+    "total_account_hp": 20.062621767309725,
     "token_balance": 0,
     "timestamp": "2025-12-02T01:51:27.000Z"
   },
   {
     "delegator": "zulfrontado",
     "delegated_hp": 1.006,
-    "total_account_hp": 2189.837712921438,
+    "total_account_hp": 2189.869176421188,
     "token_balance": 0,
     "timestamp": "2025-09-28T17:36:54.000Z"
   }
