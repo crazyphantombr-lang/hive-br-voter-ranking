@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 1.5.1
- * Description: Ajuste no filtro de 'Alterações Recentes' para ignorar inflação natural (Vest Drift)
+ * Version: 1.6.0
+ * Description: Exibe coluna de HP Próprio e Delegação renomeada
  */
 
 async function loadDashboard() {
@@ -21,7 +21,7 @@ async function loadDashboard() {
     const metaData = resMeta.ok ? await resMeta.json() : null;
 
     updateStats(delegations, metaData, historyData);
-    renderRecentActivity(delegations, historyData); // Função ajustada abaixo
+    renderRecentActivity(delegations, historyData);
     renderTable(delegations, historyData);
     setupSearch();
 
@@ -38,26 +38,22 @@ function updateStats(delegations, meta, historyData) {
     dateEl.innerText = `Atualizado em: ${dateObj.toLocaleString("pt-BR")}`;
   }
 
-  const totalHP = delegations.reduce((acc, curr) => acc + curr.hp, 0);
+  // Nota: Usamos delegated_hp aqui, pois é o valor que importa para o projeto
+  const totalHP = delegations.reduce((acc, curr) => acc + curr.delegated_hp, 0);
   document.getElementById("stat-total-hp").innerText = 
     totalHP.toLocaleString("pt-BR", { maximumFractionDigits: 0 }) + " HP";
   document.getElementById("stat-count").innerText = delegations.length;
 
-  // Destaque do Mês
   let bestGrower = { name: "—", val: 0 };
-  
   delegations.forEach(user => {
     const hist = historyData[user.delegator];
     if (hist) {
       const dates = Object.keys(hist).sort();
       const firstDate = dates[0]; 
       const lastDate = dates[dates.length - 1];
-      
       if (firstDate && lastDate && firstDate !== lastDate) {
         const growth = hist[lastDate] - hist[firstDate];
-        if (growth > bestGrower.val) {
-          bestGrower = { name: user.delegator, val: growth };
-        }
+        if (growth > bestGrower.val) bestGrower = { name: user.delegator, val: growth };
       }
     }
   });
@@ -68,17 +64,10 @@ function updateStats(delegations, meta, historyData) {
   }
 }
 
-/**
- * Renderiza Tabela de Movimentações
- * APLICA FILTRO DE RUÍDO: Ignora mudanças menores que 2 HP (Inflação natural)
- */
 function renderRecentActivity(delegations, historyData) {
   const container = document.getElementById("activity-panel");
   const tbody = document.getElementById("activity-body");
   const changes = [];
-  
-  // CONSTANTE DE CORTE: 
-  // Qualquer mudança menor que 2.0 HP é considerada "inflação natural" e escondida
   const NOISE_THRESHOLD = 2.0; 
 
   delegations.forEach(user => {
@@ -90,7 +79,6 @@ function renderRecentActivity(delegations, historyData) {
         const yesterdayHP = hist[dates[dates.length - 2]];
         const diff = todayHP - yesterdayHP;
 
-        // Só adiciona se a diferença absoluta for maior que o corte
         if (Math.abs(diff) >= NOISE_THRESHOLD) {
           changes.push({
             name: user.delegator,
@@ -109,10 +97,8 @@ function renderRecentActivity(delegations, historyData) {
   }
 
   container.style.display = "block";
-  // Ordena pelas maiores mudanças
   changes.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
 
-  // Mostra Top 5
   changes.slice(0, 5).forEach(change => {
     const tr = document.createElement("tr");
     const diffClass = change.diff > 0 ? "diff-positive" : "diff-negative";
@@ -130,7 +116,6 @@ function renderRecentActivity(delegations, historyData) {
 
 function calculateLoyalty(username, apiTimestamp, historyData) {
   let startDate = new Date(); 
-
   if (historyData[username]) {
     const dates = Object.keys(historyData[username]).sort();
     if (dates.length > 0) {
@@ -145,12 +130,9 @@ function calculateLoyalty(username, apiTimestamp, historyData) {
   } else if (apiTimestamp) {
     startDate = new Date(apiTimestamp);
   }
-
   const now = new Date();
   const diffTime = Math.abs(now - startDate);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-
-  return { days: diffDays, text: `${diffDays} dias` };
+  return { days: Math.ceil(diffTime / (1000 * 60 * 60 * 24)), text: `${Math.ceil(diffTime / (1000 * 60 * 60 * 24))} dias` };
 }
 
 function renderTable(delegations, historyData) {
@@ -167,10 +149,11 @@ function renderTable(delegations, historyData) {
     const bonusHtml = getBonusBadge(rank);
     const loyalty = calculateLoyalty(user.delegator, user.timestamp, historyData);
     let durationHtml = loyalty.text;
-    
-    if (loyalty.days > 365) {
-      durationHtml += ` <span class="veteran-badge" title="Veterano (+1 ano)">🎖️</span>`;
-    }
+    if (loyalty.days > 365) durationHtml += ` <span class="veteran-badge" title="Veterano (+1 ano)">🎖️</span>`;
+
+    // Tratamento para números muito grandes no HP Próprio
+    const ownHp = user.total_account_hp || 0;
+    const ownHpFormatted = ownHp.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
 
     tr.innerHTML = `
       <td>
@@ -179,8 +162,11 @@ function renderTable(delegations, historyData) {
              style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:5px;">
         <a href="https://peakd.com/@${user.delegator}" target="_blank">@${user.delegator}</a>
       </td>
-      <td style="font-weight:bold; font-family:monospace; font-size:1.1em;">
-          ${user.hp.toLocaleString("pt-BR", { minimumFractionDigits: 3 })}
+      <td style="font-weight:bold; font-family:monospace; font-size:1.1em; color:#4dff91;">
+          ${user.delegated_hp.toLocaleString("pt-BR", { minimumFractionDigits: 3 })}
+      </td>
+      <td style="font-family:monospace; color:#888;">
+          ${ownHpFormatted} HP
       </td>
       <td style="font-size:0.9em;">
           ${durationHtml}
@@ -195,7 +181,8 @@ function renderTable(delegations, historyData) {
     let userHistory = historyData[user.delegator] || {};
     if (Object.keys(userHistory).length === 0) {
        const today = new Date().toISOString().slice(0, 10);
-       userHistory = { [today]: user.hp };
+       // Nota: O histórico continua salvando a delegação, não o saldo total, para manter consistência
+       userHistory = { [today]: user.delegated_hp };
     }
     renderSparkline(canvasId, userHistory);
   });
