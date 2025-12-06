@@ -1,307 +1,368 @@
 [
   {
     "delegator": "matheusggr",
-    "hp": 10229.953,
+    "delegated_hp": 10229.959,
+    "total_account_hp": 28814.771357929367,
     "timestamp": "2025-03-08T15:25:27.000Z"
   },
   {
     "delegator": "wiseagent",
-    "hp": 6750.459,
+    "delegated_hp": 6750.462,
+    "total_account_hp": 75598.64696439395,
     "timestamp": "2025-12-05T14:29:03.000Z"
   },
   {
     "delegator": "rimurutempest",
-    "hp": 4402.673,
+    "delegated_hp": 4402.676,
+    "total_account_hp": 8732.302304305173,
     "timestamp": "2025-11-28T00:58:24.000Z"
   },
   {
     "delegator": "tfranzini",
-    "hp": 3117.572,
+    "delegated_hp": 3117.573,
+    "total_account_hp": 3956.460750105879,
     "timestamp": "2025-10-01T22:54:21.000Z"
   },
   {
     "delegator": "mengao",
-    "hp": 2017.257,
+    "delegated_hp": 2017.258,
+    "total_account_hp": 32836.46903174533,
     "timestamp": "2025-08-27T17:56:09.000Z"
   },
   {
     "delegator": "michupa",
-    "hp": 1069.938,
+    "delegated_hp": 1069.938,
+    "total_account_hp": 14044.725176257325,
     "timestamp": "2025-04-24T15:14:03.000Z"
   },
   {
     "delegator": "gwajnberg",
-    "hp": 1032.602,
+    "delegated_hp": 1032.603,
+    "total_account_hp": 17512.281195289164,
     "timestamp": "2025-11-05T21:52:12.000Z"
   },
   {
     "delegator": "crazyphantombr",
-    "hp": 1022.86,
+    "delegated_hp": 1022.861,
+    "total_account_hp": 14810.647042108507,
     "timestamp": "2025-07-20T23:19:24.000Z"
   },
   {
     "delegator": "kaibagt",
-    "hp": 1021.902,
+    "delegated_hp": 1021.902,
+    "total_account_hp": 6713.88227889884,
     "timestamp": "2025-04-12T16:32:00.000Z"
   },
   {
     "delegator": "josiva",
-    "hp": 1020.145,
+    "delegated_hp": 1020.146,
+    "total_account_hp": 4015.922842142444,
     "timestamp": "2025-05-30T00:49:18.000Z"
   },
   {
     "delegator": "elderdark",
-    "hp": 1017.878,
+    "delegated_hp": 1017.879,
+    "total_account_hp": 10530.48857394418,
     "timestamp": "2025-05-08T02:36:12.000Z"
   },
   {
     "delegator": "blessskateshop",
-    "hp": 1004.657,
+    "delegated_hp": 1004.658,
+    "total_account_hp": 2445.7930034910028,
     "timestamp": "2025-10-13T18:54:15.000Z"
   },
   {
     "delegator": "shiftrox",
-    "hp": 1000.694,
+    "delegated_hp": 1000.695,
+    "total_account_hp": 20971.320088610468,
     "timestamp": "2025-11-26T19:53:03.000Z"
   },
   {
     "delegator": "pablito.saldo",
-    "hp": 618.343,
+    "delegated_hp": 618.344,
+    "total_account_hp": 3035.1099792008035,
     "timestamp": "2024-12-02T00:41:12.000Z"
   },
   {
     "delegator": "ricestrela",
-    "hp": 609.937,
+    "delegated_hp": 609.938,
+    "total_account_hp": 2040.7046816987622,
     "timestamp": "2025-06-09T13:27:48.000Z"
   },
   {
     "delegator": "xvlad",
-    "hp": 537.632,
+    "delegated_hp": 537.632,
+    "total_account_hp": 5756.57080770958,
     "timestamp": "2023-07-08T22:07:09.000Z"
   },
   {
     "delegator": "legalizabrazil",
-    "hp": 536.598,
+    "delegated_hp": 536.599,
+    "total_account_hp": 695.4520216185855,
     "timestamp": "2023-08-01T15:46:45.000Z"
   },
   {
     "delegator": "lobaobh",
-    "hp": 410.966,
+    "delegated_hp": 410.966,
+    "total_account_hp": 686.0085310147,
     "timestamp": "2025-01-11T17:39:45.000Z"
   },
   {
     "delegator": "coyotelation",
-    "hp": 408.541,
+    "delegated_hp": 408.542,
+    "total_account_hp": 3366.2635621517093,
     "timestamp": "2025-03-27T23:04:48.000Z"
   },
   {
     "delegator": "markitoelias",
-    "hp": 226.34,
+    "delegated_hp": 226.34,
+    "total_account_hp": 264.3873381125789,
     "timestamp": "2025-10-05T22:33:33.000Z"
   },
   {
     "delegator": "nane-qts",
-    "hp": 223.654,
+    "delegated_hp": 223.654,
+    "total_account_hp": 628.0634271902653,
     "timestamp": "2025-05-23T14:15:15.000Z"
   },
   {
     "delegator": "thomashnblum",
-    "hp": 216.53,
+    "delegated_hp": 216.53,
+    "total_account_hp": 598.1999469969027,
     "timestamp": "2023-04-15T20:46:24.000Z"
   },
   {
     "delegator": "viniciotricolor",
-    "hp": 215.278,
+    "delegated_hp": 215.278,
+    "total_account_hp": 1043.7032533833244,
     "timestamp": "2023-06-26T04:36:27.000Z"
   },
   {
     "delegator": "syel25",
-    "hp": 212.912,
+    "delegated_hp": 212.912,
+    "total_account_hp": 2121.868680666399,
     "timestamp": "2023-11-06T16:28:12.000Z"
   },
   {
     "delegator": "felipefabar",
-    "hp": 210.724,
+    "delegated_hp": 210.724,
+    "total_account_hp": 969.5361956250393,
     "timestamp": "2024-03-14T18:26:15.000Z"
   },
   {
     "delegator": "wagnertamanaha",
-    "hp": 200.71,
+    "delegated_hp": 200.71,
+    "total_account_hp": 3989.220272331101,
     "timestamp": "2025-10-25T21:59:12.000Z"
   },
   {
     "delegator": "lincemarrom",
-    "hp": 161.359,
+    "delegated_hp": 161.359,
+    "total_account_hp": 740.2034704945972,
     "timestamp": "2023-07-03T15:50:48.000Z"
   },
   {
     "delegator": "reibar",
-    "hp": 155.03,
+    "delegated_hp": 155.03,
+    "total_account_hp": 337.81287788355286,
     "timestamp": "2023-11-12T19:48:36.000Z"
   },
   {
     "delegator": "sinvistaalsol",
-    "hp": 154.788,
+    "delegated_hp": 154.788,
+    "total_account_hp": 154.95972229019017,
     "timestamp": "2025-03-20T15:57:30.000Z"
   },
   {
     "delegator": "jaopalas",
-    "hp": 117.126,
+    "delegated_hp": 117.126,
+    "total_account_hp": 301.8043557022965,
     "timestamp": "2025-04-30T15:51:42.000Z"
   },
   {
     "delegator": "dreloop07",
-    "hp": 108.89,
+    "delegated_hp": 108.89,
+    "total_account_hp": 3212.5971949787395,
     "timestamp": "2023-03-24T18:54:27.000Z"
   },
   {
     "delegator": "underlock",
-    "hp": 108.576,
+    "delegated_hp": 108.576,
+    "total_account_hp": 9686.150650600004,
     "timestamp": "2023-03-10T21:57:33.000Z"
   },
   {
     "delegator": "imagemvirtual",
-    "hp": 108.489,
+    "delegated_hp": 108.489,
+    "total_account_hp": 125.68784362722525,
     "timestamp": "2023-03-20T21:30:03.000Z"
   },
   {
     "delegator": "giovanalrico",
-    "hp": 108.489,
+    "delegated_hp": 108.489,
+    "total_account_hp": 122.85958843510184,
     "timestamp": "2023-03-20T21:31:24.000Z"
   },
   {
     "delegator": "mauriciolimax",
-    "hp": 107.506,
+    "delegated_hp": 107.506,
+    "total_account_hp": 1860.7032306661747,
     "timestamp": "2023-07-11T05:34:00.000Z"
   },
   {
     "delegator": "hellene8",
-    "hp": 101.7,
+    "delegated_hp": 101.7,
+    "total_account_hp": 1071.1170021864737,
     "timestamp": "2025-05-18T19:45:27.000Z"
   },
   {
     "delegator": "ogechukwu-martha",
-    "hp": 101.41,
+    "delegated_hp": 101.41,
+    "total_account_hp": 174.95388221029805,
     "timestamp": "2025-06-22T17:25:42.000Z"
   },
   {
     "delegator": "eii",
-    "hp": 100.368,
+    "delegated_hp": 100.368,
+    "total_account_hp": 5174.034956416923,
     "timestamp": "2025-10-24T10:50:09.000Z"
   },
   {
     "delegator": "d35tr0",
-    "hp": 74.652,
+    "delegated_hp": 74.652,
+    "total_account_hp": 167.1871317841041,
     "timestamp": "2023-10-16T00:16:06.000Z"
   },
   {
     "delegator": "arthursiq5",
-    "hp": 71.891,
+    "delegated_hp": 71.891,
+    "total_account_hp": 254.64396706975666,
     "timestamp": "2023-08-03T20:49:00.000Z"
   },
   {
     "delegator": "casagrande",
-    "hp": 60.213,
+    "delegated_hp": 60.213,
+    "total_account_hp": 66.5714570396617,
     "timestamp": "2025-10-25T21:41:48.000Z"
   },
   {
     "delegator": "matheusggr.leo",
-    "hp": 54.249,
+    "delegated_hp": 54.249,
+    "total_account_hp": 134.16430494706495,
     "timestamp": "2023-03-20T01:27:27.000Z"
   },
   {
     "delegator": "zombialien",
-    "hp": 52.343,
+    "delegated_hp": 52.343,
+    "total_account_hp": 316.32798361061054,
     "timestamp": "2024-06-03T20:55:39.000Z"
   },
   {
     "delegator": "captainman",
-    "hp": 52.232,
+    "delegated_hp": 52.232,
+    "total_account_hp": 1224.2447885174638,
     "timestamp": "2024-06-28T21:57:57.000Z"
   },
   {
     "delegator": "adncabrera",
-    "hp": 51.31,
+    "delegated_hp": 51.31,
+    "total_account_hp": 786.0458552914645,
     "timestamp": "2025-01-28T01:16:24.000Z"
   },
   {
     "delegator": "grafvisionsp",
-    "hp": 50.369,
+    "delegated_hp": 50.369,
+    "total_account_hp": 1344.123491605774,
     "timestamp": "2025-09-11T12:45:39.000Z"
   },
   {
     "delegator": "ladyaryastark",
-    "hp": 50.078,
+    "delegated_hp": 50.078,
+    "total_account_hp": 2285.8272004956725,
     "timestamp": "2025-11-15T22:00:00.000Z"
   },
   {
     "delegator": "hive-br.leo",
-    "hp": 44.099,
+    "delegated_hp": 44.099,
+    "total_account_hp": 45.173559103410106,
     "timestamp": "2023-07-26T03:22:42.000Z"
   },
   {
     "delegator": "ogepaul1986",
-    "hp": 34.21,
+    "delegated_hp": 34.21,
+    "total_account_hp": 39.231715789304516,
     "timestamp": "2025-10-16T21:18:42.000Z"
   },
   {
     "delegator": "speedtuning",
-    "hp": 32.077,
+    "delegated_hp": 32.077,
+    "total_account_hp": 500.61416892490814,
     "timestamp": "2023-09-14T22:47:57.000Z"
   },
   {
     "delegator": "us3incanada",
-    "hp": 30.01,
+    "delegated_hp": 30.01,
+    "total_account_hp": 49.753065926458696,
     "timestamp": "2025-12-02T01:50:39.000Z"
   },
   {
     "delegator": "boeltermc",
-    "hp": 21.255,
+    "delegated_hp": 21.255,
+    "total_account_hp": 3288.9057647096415,
     "timestamp": "2023-11-27T22:00:54.000Z"
   },
   {
     "delegator": "keepkeybr",
-    "hp": 13.878,
+    "delegated_hp": 13.878,
+    "total_account_hp": 15.119252260035582,
     "timestamp": "2023-10-03T15:07:09.000Z"
   },
   {
     "delegator": "name0",
-    "hp": 10.448,
+    "delegated_hp": 10.448,
+    "total_account_hp": 345.9222296296377,
     "timestamp": "2024-06-26T23:01:42.000Z"
   },
   {
     "delegator": "sieghard1990",
-    "hp": 10.306,
+    "delegated_hp": 10.306,
+    "total_account_hp": 196.2894420728259,
     "timestamp": "2024-12-01T13:37:30.000Z"
   },
   {
     "delegator": "v-36",
-    "hp": 10.126,
+    "delegated_hp": 10.126,
+    "total_account_hp": 96.2778510542929,
     "timestamp": "2025-07-10T10:59:54.000Z"
   },
   {
     "delegator": "manopunkttt",
-    "hp": 10.087,
+    "delegated_hp": 10.087,
+    "total_account_hp": 93.17187104683859,
     "timestamp": "2025-08-26T22:39:30.000Z"
   },
   {
     "delegator": "emviagem",
-    "hp": 9.496,
+    "delegated_hp": 9.496,
+    "total_account_hp": 9.941588186468698,
     "timestamp": "2025-04-10T10:02:57.000Z"
   },
   {
     "delegator": "claytonlins",
-    "hp": 6.1,
+    "delegated_hp": 6.1,
+    "total_account_hp": 7.25654750970504,
     "timestamp": "2025-12-02T01:48:33.000Z"
   },
   {
     "delegator": "jkatrina",
-    "hp": 1.917,
+    "delegated_hp": 1.917,
+    "total_account_hp": 20.062304873273817,
     "timestamp": "2025-12-02T01:51:27.000Z"
   },
   {
     "delegator": "zulfrontado",
-    "hp": 1.006,
+    "delegated_hp": 1.006,
+    "total_account_hp": 2189.8345868999636,
     "timestamp": "2025-09-28T17:36:54.000Z"
   }
 ]
