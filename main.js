@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 1.6.0
- * Description: Exibe coluna de HP Próprio e Delegação renomeada
+ * Version: 1.7.0
+ * Description: Adiciona coluna HBR Token
  */
 
 async function loadDashboard() {
@@ -38,7 +38,6 @@ function updateStats(delegations, meta, historyData) {
     dateEl.innerText = `Atualizado em: ${dateObj.toLocaleString("pt-BR")}`;
   }
 
-  // Nota: Usamos delegated_hp aqui, pois é o valor que importa para o projeto
   const totalHP = delegations.reduce((acc, curr) => acc + curr.delegated_hp, 0);
   document.getElementById("stat-total-hp").innerText = 
     totalHP.toLocaleString("pt-BR", { maximumFractionDigits: 0 }) + " HP";
@@ -151,9 +150,13 @@ function renderTable(delegations, historyData) {
     let durationHtml = loyalty.text;
     if (loyalty.days > 365) durationHtml += ` <span class="veteran-badge" title="Veterano (+1 ano)">🎖️</span>`;
 
-    // Tratamento para números muito grandes no HP Próprio
     const ownHp = user.total_account_hp || 0;
-    const ownHpFormatted = ownHp.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+    
+    // Formatação do HBR (token_balance)
+    const hbrBalance = user.token_balance || 0;
+    // Se for 0, fica cinza apagado. Se tiver saldo, fica destacado em ciano/azul
+    const hbrStyle = hbrBalance > 0 ? "color:#4da6ff; font-weight:bold;" : "color:#444;"; 
+    const hbrFormatted = hbrBalance.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 3 });
 
     tr.innerHTML = `
       <td>
@@ -166,7 +169,10 @@ function renderTable(delegations, historyData) {
           ${user.delegated_hp.toLocaleString("pt-BR", { minimumFractionDigits: 3 })}
       </td>
       <td style="font-family:monospace; color:#888;">
-          ${ownHpFormatted} HP
+          ${ownHp.toLocaleString("pt-BR", { maximumFractionDigits: 0 })} HP
+      </td>
+      <td style="font-family:monospace; ${hbrStyle}">
+          ${hbrFormatted}
       </td>
       <td style="font-size:0.9em;">
           ${durationHtml}
@@ -181,7 +187,6 @@ function renderTable(delegations, historyData) {
     let userHistory = historyData[user.delegator] || {};
     if (Object.keys(userHistory).length === 0) {
        const today = new Date().toISOString().slice(0, 10);
-       // Nota: O histórico continua salvando a delegação, não o saldo total, para manter consistência
        userHistory = { [today]: user.delegated_hp };
     }
     renderSparkline(canvasId, userHistory);
