@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 1.8.0
- * Description: Bônus HBR Granular, UI Limpa e Sticky Column
+ * Version: 1.9.0
+ * Description: Exibe status de curadoria (Votos recentes)
  */
 
 async function loadDashboard() {
@@ -110,6 +110,14 @@ function renderRecentActivity(delegations, historyData) {
   });
 }
 
+function calculateDuration(dateString) {
+  if (!dateString) return null;
+  const start = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now - start);
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
 function calculateLoyalty(username, apiTimestamp, historyData) {
   let startDate = new Date(); 
   if (historyData[username]) {
@@ -131,10 +139,7 @@ function calculateLoyalty(username, apiTimestamp, historyData) {
   return { days: Math.ceil(diffTime / (1000 * 60 * 60 * 24)), text: `${Math.ceil(diffTime / (1000 * 60 * 60 * 24))} dias` };
 }
 
-// --- FUNÇÕES DE BÔNUS ATUALIZADAS (1.8.0) ---
-
 function getDelegationBonus(rank) {
-  // Apenas porcentagem e cor, sem texto "Ouro/Prata"
   if (rank <= 10) return `<span class="bonus-tag bonus-gold">+20%</span>`;
   if (rank <= 20) return `<span class="bonus-tag bonus-silver">+15%</span>`;
   if (rank <= 30) return `<span class="bonus-tag bonus-bronze">+10%</span>`;
@@ -143,18 +148,43 @@ function getDelegationBonus(rank) {
 }
 
 function getHbrBonus(stakeBalance) {
-  if (!stakeBalance || stakeBalance < 10) {
-    return `<span style="opacity:0.3; font-size:0.8em">—</span>`;
+  if (!stakeBalance || stakeBalance < 10) return `<span style="opacity:0.3; font-size:0.8em">—</span>`;
+  let bonus = Math.floor(stakeBalance / 10);
+  if (bonus > 20) bonus = 20;
+  return `<span class="bonus-tag bonus-hbr">+${bonus}%</span>`;
+}
+
+// NOVA FUNÇÃO: Formata a coluna de curadoria
+function getCurationStatus(lastVoteDate, count30d) {
+  if (!lastVoteDate) {
+    return `<span style="color:#666; font-size:0.85em;">—</span>`;
   }
   
-  // Regra Granular: 1% a cada 10 Tokens. (floor)
-  // Ex: 15 tokens = 1%. 99 tokens = 9%.
-  let bonus = Math.floor(stakeBalance / 10);
+  // Como lastVoteDate vem da blockchain como string UTC (ex: "2023-10-01T10:00:00")
+  // Precisamos garantir que o formato seja aceito
+  const daysAgo = calculateDuration(lastVoteDate + (lastVoteDate.endsWith('Z') ? '' : 'Z'));
   
-  // Teto Máximo: 20%
-  if (bonus > 20) bonus = 20;
+  let color = "#666";
+  let icon = "";
 
-  return `<span class="bonus-tag bonus-hbr">+${bonus}%</span>`;
+  if (daysAgo <= 3) {
+    color = "#4dff91"; // Verde (Ativo recentemente)
+    icon = "⚡";
+  } else if (daysAgo <= 15) {
+    color = "#e6e6ff"; // Normal
+  } else {
+    color = "#ffcc00"; // Alerta (Amarelo)
+    icon = "⚠️";
+  }
+
+  const daysText = daysAgo === 0 ? "Hoje" : daysAgo === 1 ? "Ontem" : `${daysAgo}d atrás`;
+  
+  return `
+    <div style="line-height:1.2;">
+      <span style="color:${color}; font-weight:bold;">${icon} ${daysText}</span><br>
+      <span style="font-size:0.8em; color:#888;">(${count30d} votos/mês)</span>
+    </div>
+  `;
 }
 
 function renderTable(delegations, historyData) {
@@ -175,11 +205,11 @@ function renderTable(delegations, historyData) {
     const ownHp = user.total_account_hp || 0;
     const hbrStake = user.token_balance || 0;
     
-    // Cálculos de Bônus (Clean UI)
+    // Novas Colunas
     const delegationBonusHtml = getDelegationBonus(rank);
     const hbrBonusHtml = getHbrBonus(hbrStake);
+    const curationHtml = getCurationStatus(user.last_vote_date, user.votes_month);
 
-    // Destaque visual para quem tem Stake
     const hbrStyle = hbrStake > 0 ? "color:#4da6ff; font-weight:bold;" : "color:#444;"; 
 
     tr.innerHTML = `
@@ -198,13 +228,14 @@ function renderTable(delegations, historyData) {
       <td style="font-family:monospace; ${hbrStyle}">
           ${hbrStake.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
       </td>
+      
+      <td>${curationHtml}</td>
+      
       <td style="font-size:0.9em;">
           ${durationHtml}
       </td>
-      
       <td>${delegationBonusHtml}</td>
       <td>${hbrBonusHtml}</td>
-      
       <td style="width:140px;">
           <canvas id="${canvasId}" width="120" height="40"></canvas>
       </td>
