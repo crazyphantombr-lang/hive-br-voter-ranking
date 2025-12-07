@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 1.7.0
- * Description: Adiciona coluna HBR Token
+ * Version: 1.8.0
+ * Description: Bônus HBR Granular, UI Limpa e Sticky Column
  */
 
 async function loadDashboard() {
@@ -77,7 +77,6 @@ function renderRecentActivity(delegations, historyData) {
         const todayHP = hist[dates[dates.length - 1]];
         const yesterdayHP = hist[dates[dates.length - 2]];
         const diff = todayHP - yesterdayHP;
-
         if (Math.abs(diff) >= NOISE_THRESHOLD) {
           changes.push({
             name: user.delegator,
@@ -97,12 +96,10 @@ function renderRecentActivity(delegations, historyData) {
 
   container.style.display = "block";
   changes.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
-
   changes.slice(0, 5).forEach(change => {
     const tr = document.createElement("tr");
     const diffClass = change.diff > 0 ? "diff-positive" : "diff-negative";
     const signal = change.diff > 0 ? "+" : "";
-
     tr.innerHTML = `
       <td><a href="https://peakd.com/@${change.name}" target="_blank">@${change.name}</a></td>
       <td class="val-muted">${change.old.toFixed(0)}</td>
@@ -134,6 +131,32 @@ function calculateLoyalty(username, apiTimestamp, historyData) {
   return { days: Math.ceil(diffTime / (1000 * 60 * 60 * 24)), text: `${Math.ceil(diffTime / (1000 * 60 * 60 * 24))} dias` };
 }
 
+// --- FUNÇÕES DE BÔNUS ATUALIZADAS (1.8.0) ---
+
+function getDelegationBonus(rank) {
+  // Apenas porcentagem e cor, sem texto "Ouro/Prata"
+  if (rank <= 10) return `<span class="bonus-tag bonus-gold">+20%</span>`;
+  if (rank <= 20) return `<span class="bonus-tag bonus-silver">+15%</span>`;
+  if (rank <= 30) return `<span class="bonus-tag bonus-bronze">+10%</span>`;
+  if (rank <= 40) return `<span class="bonus-tag bonus-honor">+5%</span>`;
+  return `<span style="opacity:0.3; font-size:0.8em">—</span>`;
+}
+
+function getHbrBonus(stakeBalance) {
+  if (!stakeBalance || stakeBalance < 10) {
+    return `<span style="opacity:0.3; font-size:0.8em">—</span>`;
+  }
+  
+  // Regra Granular: 1% a cada 10 Tokens. (floor)
+  // Ex: 15 tokens = 1%. 99 tokens = 9%.
+  let bonus = Math.floor(stakeBalance / 10);
+  
+  // Teto Máximo: 20%
+  if (bonus > 20) bonus = 20;
+
+  return `<span class="bonus-tag bonus-hbr">+${bonus}%</span>`;
+}
+
 function renderTable(delegations, historyData) {
   const tbody = document.getElementById("ranking-body");
   tbody.innerHTML = "";
@@ -145,21 +168,22 @@ function renderTable(delegations, historyData) {
     tr.dataset.name = user.delegator.toLowerCase();
 
     const canvasId = `chart-${user.delegator}`;
-    const bonusHtml = getBonusBadge(rank);
     const loyalty = calculateLoyalty(user.delegator, user.timestamp, historyData);
     let durationHtml = loyalty.text;
     if (loyalty.days > 365) durationHtml += ` <span class="veteran-badge" title="Veterano (+1 ano)">🎖️</span>`;
 
     const ownHp = user.total_account_hp || 0;
+    const hbrStake = user.token_balance || 0;
     
-    // Formatação do HBR (token_balance)
-    const hbrBalance = user.token_balance || 0;
-    // Se for 0, fica cinza apagado. Se tiver saldo, fica destacado em ciano/azul
-    const hbrStyle = hbrBalance > 0 ? "color:#4da6ff; font-weight:bold;" : "color:#444;"; 
-    const hbrFormatted = hbrBalance.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 3 });
+    // Cálculos de Bônus (Clean UI)
+    const delegationBonusHtml = getDelegationBonus(rank);
+    const hbrBonusHtml = getHbrBonus(hbrStake);
+
+    // Destaque visual para quem tem Stake
+    const hbrStyle = hbrStake > 0 ? "color:#4da6ff; font-weight:bold;" : "color:#444;"; 
 
     tr.innerHTML = `
-      <td>
+      <td class="sticky-col">
         <span style="color:#666; margin-right:8px; font-weight:bold;">#${rank}</span>
         <img src="https://images.hive.blog/u/${user.delegator}/avatar/small" 
              style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:5px;">
@@ -172,12 +196,15 @@ function renderTable(delegations, historyData) {
           ${ownHp.toLocaleString("pt-BR", { maximumFractionDigits: 0 })} HP
       </td>
       <td style="font-family:monospace; ${hbrStyle}">
-          ${hbrFormatted}
+          ${hbrStake.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
       </td>
       <td style="font-size:0.9em;">
           ${durationHtml}
       </td>
-      <td>${bonusHtml}</td>
+      
+      <td>${delegationBonusHtml}</td>
+      <td>${hbrBonusHtml}</td>
+      
       <td style="width:140px;">
           <canvas id="${canvasId}" width="120" height="40"></canvas>
       </td>
@@ -202,14 +229,6 @@ function setupSearch() {
       row.style.display = row.dataset.name.includes(term) ? "" : "none";
     });
   });
-}
-
-function getBonusBadge(rank) {
-  if (rank <= 10) return `<span class="bonus-tag bonus-gold">Ouro (+20%)</span>`;
-  if (rank <= 20) return `<span class="bonus-tag bonus-silver">Prata (+15%)</span>`;
-  if (rank <= 30) return `<span class="bonus-tag bonus-bronze">Bronze (+10%)</span>`;
-  if (rank <= 40) return `<span class="bonus-tag bonus-honor">Honra (+5%)</span>`;
-  return `<span style="opacity:0.3">—</span>`;
 }
 
 function renderSparkline(canvasId, userHistoryObj) {
