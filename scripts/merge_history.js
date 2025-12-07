@@ -1,7 +1,7 @@
 /**
  * Script: Merge History
- * Version: 1.6.1
- * Description: Hotfix - Ajuste para ler 'delegated_hp' em vez de 'hp'
+ * Version: 1.9.1
+ * Description: Garante leitura correta de 'delegated_hp'
  */
 
 const fs = require("fs");
@@ -21,7 +21,7 @@ function loadHistory() {
       return JSON.parse(fs.readFileSync(HISTORY_FILE, "utf-8"));
     }
   } catch (err) {
-    console.warn("⚠️ Arquivo de histórico não encontrado ou inválido. Criando novo.");
+    console.warn("⚠️ Histórico novo criado.");
   }
   return {};
 }
@@ -31,9 +31,9 @@ function loadCurrent() {
     if (fs.existsSync(CURRENT_FILE)) {
       return JSON.parse(fs.readFileSync(CURRENT_FILE, "utf-8"));
     }
-    throw new Error("Arquivo current.json não encontrado.");
+    throw new Error("current.json não encontrado.");
   } catch (err) {
-    console.error("❌ Erro fatal:", err.message);
+    console.error("❌ Erro:", err.message);
     process.exit(1);
   }
 }
@@ -47,7 +47,7 @@ function today() {
 }
 
 function run() {
-  console.log("🔄 Iniciando fusão de histórico (v1.6.1)...");
+  console.log("🔄 Atualizando histórico...");
   
   const history = loadHistory();
   const currentList = loadCurrent();
@@ -55,8 +55,9 @@ function run() {
 
   const currentMap = new Map();
   currentList.forEach(entry => {
-    // CORREÇÃO AQUI: Mudamos de entry.hp para entry.delegated_hp
-    currentMap.set(entry.delegator, entry.delegated_hp);
+    // CRÍTICO: Usa delegated_hp. Se for undefined, usa 0.
+    const val = entry.delegated_hp !== undefined ? entry.delegated_hp : entry.hp;
+    currentMap.set(entry.delegator, val || 0);
   });
 
   const allUsers = new Set([
@@ -67,22 +68,18 @@ function run() {
   let updatesCount = 0;
 
   allUsers.forEach(user => {
-    if (!history[user]) {
-      history[user] = {};
-    }
+    if (!history[user]) history[user] = {};
 
     const currentHP = currentMap.get(user);
     const lastDate = Object.keys(history[user]).sort().pop();
     const lastHP = lastDate ? history[user][lastDate] : 0;
 
     if (currentHP !== undefined) {
-      // Se o valor mudou ou se é a primeira vez rodando hoje (corrige o zero anterior)
       if (history[user][date] !== currentHP) {
         history[user][date] = currentHP;
         updatesCount++;
       }
     } else if (lastHP > 0) {
-      // Saída real (não está na lista atual)
       if (history[user][date] !== 0) {
         history[user][date] = 0;
         updatesCount++;
@@ -91,7 +88,7 @@ function run() {
   });
 
   saveHistory(history);
-  console.log(`✅ history.json corrigido e atualizado com ${updatesCount} alterações.`);
+  console.log(`✅ Histórico salvo (${updatesCount} updates).`);
 }
 
 run();
