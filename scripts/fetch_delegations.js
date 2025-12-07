@@ -1,7 +1,7 @@
 /**
- * Script: Fetch Delegations (Stability Fix)
- * Version: 1.9.1
- * Update: Troca de RPC Node para OpenHive e aumento de limite de histórico (5000)
+ * Script: Fetch Delegations (Multi-Node Failover)
+ * Version: 1.9.2
+ * Update: Implementa rotação de servidores RPC e limite seguro de histórico (1500)
  */
 
 const fetch = require("node-fetch");
@@ -12,9 +12,14 @@ const ACCOUNT = "hive-br.voter";
 const TOKEN_SYMBOL = "HBR";
 
 const HAF_API = `https://rpc.mahdiyari.info/hafsql/delegations/${ACCOUNT}/incoming?limit=300`;
-// MUDANÇA: Node mais estável para chamadas de histórico pesado
-const HIVE_RPC = "https://api.openhive.network"; 
 const HE_RPC = "https://api.hive-engine.com/rpc/contracts";
+
+// Lista de Servidores para garantir que um funcione
+const RPC_NODES = [
+  "https://api.hive.blog",       // Oficial (Lento mas confiável)
+  "https://api.deathwing.me",    // Rápido
+  "https://api.openhive.network" // Alternativo
+];
 
 const DATA_DIR = "data";
 
@@ -22,19 +27,29 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
+// Função inteligente que tenta vários nós até conseguir
 async function hiveRpc(method, params) {
-  try {
-    const response = await fetch(HIVE_RPC, {
-      method: "POST",
-      body: JSON.stringify({ jsonrpc: "2.0", method: method, params: params, id: 1 }),
-      headers: { "Content-Type": "application/json" }
-    });
-    const json = await response.json();
-    return json.result;
-  } catch (err) {
-    console.error(`❌ Erro no RPC (${method}):`, err.message);
-    return null;
+  for (const node of RPC_NODES) {
+    try {
+      const response = await fetch(node, {
+        method: "POST",
+        body: JSON.stringify({ jsonrpc: "2.0", method: method, params: params, id: 1 }),
+        headers: { "Content-Type": "application/json" },
+        timeout: 5000 // 5 segundos de timeout
+      });
+      
+      if (!response.ok) throw new Error(`Status ${response.status}`);
+      
+      const json = await response.json();
+      if (json.error) throw new Error(json.error.message);
+      
+      return json.result; // Sucesso! Retorna e sai do loop
+    } catch (err) {
+      console.warn(`⚠️ Falha no node ${node}: ${err.message}. Tentando próximo...`);
+    }
   }
+  console.error("❌ Todos os nós RPC falharam.");
+  return null;
 }
 
 async function fetchHiveEngineBalances(accounts, symbol) {
@@ -58,17 +73,17 @@ async function fetchHiveEngineBalances(accounts, symbol) {
 }
 
 async function fetchVoteHistory(voterAccount) {
-  console.log(`🔎 Analisando histórico de @${voterAccount} (via OpenHive)...`);
+  console.log(`🔎 Buscando histórico de votos de @${voterAccount}...`);
   
-  // Aumentado para 5000 operações para pegar mais dias de histórico
-  const history = await hiveRpc("condenser_api.get_account_history", [voterAccount, -1, 5000]);
+  // Limite reduzido para 1500 para evitar bloqueio, mas usando o sistema multi-node
+  const history = await hiveRpc("condenser_api.get_account_history", [voterAccount, -1, 1500]);
   
   if (!history || !Array.isArray(history)) {
-    console.warn("⚠️ Histórico vazio ou falha na API. Dados de curadoria ficarão vazios.");
+    console.warn("⚠️ Não foi possível baixar o histórico de votos.");
     return {};
   }
 
-  console.log(`✅ Histórico recebido: ${history.length} operações.`);
+  console.log(`✅ ${history.length} operações recuperadas.`);
 
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -81,13 +96,14 @@ async function fetchVoteHistory(voterAccount) {
     
     if (op[0] === 'vote' && op[1].voter === voterAccount) {
       const author = op[1].author;
-      const voteDate = new Date(timestamp + "Z");
+      // Garante formato ISO para compatibilidade
+      const voteDate = new Date(timestamp + (timestamp.endsWith("Z") ? "" : "Z"));
 
       if (!voteStats[author]) {
         voteStats[author] = { count_30d: 0, last_vote_ts: null };
       }
 
-      // O histórico vem do antigo para o novo, então sempre sobrescrevemos com o mais recente
+      // Salva sempre o timestamp mais recente encontrado
       voteStats[author].last_vote_ts = timestamp;
 
       if (voteDate >= thirtyDaysAgo) {
@@ -96,13 +112,12 @@ async function fetchVoteHistory(voterAccount) {
     }
   });
   
-  console.log(`📊 Curadoria detectada para ${Object.keys(voteStats).length} usuários únicos.`);
   return voteStats;
 }
 
 async function run() {
   try {
-    console.log(`1. 🔄 Buscando delegações...`);
+    console.log(`1. 🔄 HAFSQL (Delegações)...`);
     const res = await fetch(HAF_API);
     const delegationsData = await res.json();
 
@@ -110,27 +125,31 @@ async function run() {
 
     const userNames = delegationsData.map(d => d.delegator);
 
-    console.log(`2. 🌍 Buscando Dados Globais...`);
+    console.log(`2. 🌍 Hive RPC (Cotação e HP)...`);
     const globals = await hiveRpc("condenser_api.get_dynamic_global_properties", []);
-    const vestToHp = parseFloat(globals.total_vesting_fund_hive) / parseFloat(globals.total_vesting_shares);
+    
+    // Tratamento de erro caso globals falhe
+    let vestToHp = 0.0005; // Valor fallback aproximado
+    if (globals) {
+        vestToHp = parseFloat(globals.total_vesting_fund_hive) / parseFloat(globals.total_vesting_shares);
+    }
 
     const accounts = await hiveRpc("condenser_api.get_accounts", [userNames]);
     const wealthMap = {};
     if (accounts) {
         accounts.forEach(acc => {
-        wealthMap[acc.name] = parseFloat(acc.vesting_shares) * vestToHp;
+            wealthMap[acc.name] = parseFloat(acc.vesting_shares) * vestToHp;
         });
     }
 
-    console.log(`3. 🪙 Buscando Tokens HBR...`);
+    console.log(`3. 🪙 Hive-Engine (HBR Stake)...`);
     const heBalances = await fetchHiveEngineBalances(userNames, TOKEN_SYMBOL);
     const tokenMap = {};
     heBalances.forEach(b => { 
-        // Pega STAKE
         tokenMap[b.account] = parseFloat(b.stake || 0); 
     });
 
-    console.log(`4. 🗳️ Processando Votos...`);
+    console.log(`4. 🗳️ Histórico de Curadoria...`);
     const curationMap = await fetchVoteHistory(ACCOUNT);
 
     const finalData = delegationsData
@@ -158,7 +177,7 @@ async function run() {
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
 
-    console.log("✅ Dados salvos com sucesso!");
+    console.log("✅ Ciclo concluído com sucesso!");
 
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
