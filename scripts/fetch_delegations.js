@@ -1,260 +1,51 @@
 /**
- * Script: Fetch Delegations (Fixed List Update)
- * Version: 2.2.0
- * Update: Adiciona usuários fixos (Watchlist) mesmo sem delegação
+ * Script: Fetch Delegations (Full Watchlist)
+ * Version: 2.3.1
+ * Update: Lista de usuários fixos expandida
  */
 
 const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 
-const ACCOUNT = "hive-br.voter";
+const VOTER_ACCOUNT = "hive-br.voter";
+const PROJECT_ACCOUNT = "hive-br";
 const TOKEN_SYMBOL = "HBR";
 
-// --- LISTA DE USUÁRIOS FIXOS (PREENCHA AQUI) ---
-// Adicione os nomes em minúsculo, entre aspas, separados por vírgula.
+// --- LISTA DE USUÁRIOS FIXOS (WATCHLIST) ---
 const FIXED_USERS = [
-  "abandeira",
-"aiuna",
-"aiyumi",
-"ale-rio",
-"alexandrefeliz",
-"alina97",
-"alinequeiroz",
-"alucardy",
-"alyxmijaresda",
-"anacvv05",
-"anafenalli",
-"anazn",
-"aphiel",
-"avedorada",
-"avel692",
-"ayummi",
-"badge-182654",
-"barizon",
-"bastter",
-"bergmannadv",
-"bernardonassar",
-"blessskateshop",
-"boba1961",
-"bodhi.rio",
-"borajogar",
-"borbolet",
-"brancarosamel",
-"brazilians",
-"caaio",
-"canellov",
-"capuah-iruet",
-"carlosro",
-"carolramos",
-"casagrande",
-"christiantatsch",
-"claytonlins",
-"cleateles1",
-"coiotes",
-"coyote.sports",
-"coyotelation",
-"crazyphantombr",
-"cril692003",
-"crisciacm",
-"cryptoshaman007",
-"david0808",
-"deividluchi",
-"diegoguerra",
-"diogenesrm",
-"disruptivas",
-"dolandoteiro",
-"donamona",
-"dreloop07",
-"dstampede",
-"dudutaulois",
-"dunatos",
-"edvamfilho",
-"ehvinho",
-"eijibr",
-"elcoachjesus",
-"elderdark",
-"emanueledornelas",
-"emviagem",
-"endrius",
-"ericpso",
-"escadas",
-"estourefugiado",
-"eujotave",
-"f0rtunate",
-"fabiocola",
-"fabiosoares",
-"felipefortes",
-"feliperochatv",
-"fernandosoder",
-"fireguardian",
-"fireguardian.spt",
-"floressenciarte",
-"fmajuniorphoto",
-"frankrey11",
-"fredsilva007",
-"g4tzbr",
-"gabrielmilego",
-"game3x3",
-"greengineer",
-"gtpacheko17",
-"handrehermann",
-"hevelyn.jeeh",
-"hive-br",
-"hive-br.leo",
-"hivebr.spt",
-"hive-br.voter",
-"hranhuk",
-"imagemvirtual",
-"ismaelrd04",
-"iuriomagico",
-"j377e",
-"jacalf",
-"jaopalas",
-"jaquevital",
-"jarmeson",
-"jeffparajiujitsu",
-"jkatrina",
-"jklio123",
-"joaophelip",
-"joaoprobst",
-"jontv",
-"jose.music",
-"josiva",
-"jsaez",
-"jsantana",
-"jucabala",
-"juliasantos",
-"jullyette",
-"kaibagt",
-"kat.eli",
-"kaveira",
-"kelday666",
-"kevbest",
-"kingforceblack",
-"kojiri",
-"laribf",
-"laurasoares",
-"legalizabrazil",
-"leo.marques",
-"lesulzbacher",
-"lincemarrom",
-"lipe100dedos",
-"liquideity",
-"litekoiner",
-"lobaobh",
-"luanaecard",
-"ludgero",
-"luidimarg",
-"luizeba",
-"luizhadad",
-"maismau",
-"marianaemilia",
-"markitoelias",
-"marzukiali",
-"matheusggr",
-"matheusggr.leo",
-"matheusluciano",
-"mathfb",
-"mauriciolimax",
-"megamariano",
-"meinickenutri",
-"michupa",
-"micloop",
-"milery",
-"mrprofessor",
-"mrprofessordaily",
-"nane-qts",
-"naoebemumcanal",
-"nascimentoab",
-"nascimentocb",
-"nathylieth",
-"nayha23",
-"nichollasrdo",
-"norseland",
-"officialjag",
-"oficialversatil",
-"orozcorobetson",
-"pablito.saldo",
-"papoprodutivo",
-"paradaleticia",
-"pataty69",
-"pedagogia",
-"pedrocanella",
-"perfilbrasil",
-"phgnomo",
-"phsaeta",
-"pirulito.zoado",
-"pythomaster",
-"qyses",
-"raistling",
-"rdabrasil",
-"reas63",
-"renatacristiane",
-"rhommar",
-"rimasx",
-"robspiercer",
-"rodrigojmelo",
-"rounan.soares",
-"rphspinheiro",
-"sandranunes",
-"santana37",
-"santinhos",
-"seabet",
-"selhomarlopes",
-"shiftrox",
-"silviamaria",
-"sintropia",
-"sistemabusiness",
-"skaters",
-"sktbr",
-"sousafrc",
-"splinter100dedos",
-"surfgurupro",
-"surflimpo",
-"tankulo",
-"tatianest",
-"tatylayla",
-"teteuzinho",
-"teu",
-"thaliaperez",
-"thomashnblum",
-"totomusic",
-"triptamine555",
-"tucacheias",
-"ukyron3",
-"underlock",
-"unhurried",
-"unten1995",
-"usergabs",
-"vanessabarrostec",
-"vcorioh",
-"vempromundo",
-"ventrinidad",
-"vicvondoom",
-"vini0",
-"vitoragnelli",
-"vonlecram",
-"wagnertamanaha",
-"wallabra",
-"wallabra-wallet",
-"wasye",
-"wellingt556",
-"wilkersk8zn",
-"wiseagent",
-"wlfreitas",
-"xgoivo",
-"xlety",
-"xtryhard",
-"yungbresciani",
-"zallin",
-"zombialien",
-"mengao",
-"vaipraonde"
+  "abandeira", "aiuna", "aiyumi", "ale-rio", "alexandrefeliz", "alina97", "alinequeiroz", "alucardy", "alyxmijaresda",
+  "anacvv05", "anafenalli", "anazn", "aphiel", "avedorada", "avel692", "ayummi", "badge-182654", "barizon", "bastter",
+  "bergmannadv", "bernardonassar", "blessskateshop", "boba1961", "bodhi.rio", "borajogar", "brancarosamel", "brazilians",
+  "caaio", "canellov", "capuah-iruet", "carlosro", "carolramos", "casagrande", "christiantatsch", "claytonlins", "cleateles1",
+  "coiotes", "coyote.sports", "coyotelation", "crazyphantombr", "cril692003", "crisciacm", "cryptoshaman007", "david0808",
+  "deividluchi", "diegoguerra", "diogenesrm", "discernente", "disruptivas", "doblershiva", "dolandoteiro", "donamona",
+  "dreloop07", "dstampede", "dudutaulois", "dunatos", "edufecchio", "edvamfilho", "ehvinho", "eijibr", "elcoachjesus",
+  "elderdark", "emanueledornelas", "emviagem", "endrius", "ericpso", "escadas", "estourefugiado", "eujotave", "f0rtunate",
+  "fabiocola", "fabiosoares", "felipefortes", "feliperochatv", "fernandosoder", "fireguardian", "fireguardian.spt",
+  "floressenciarte", "fmajuniorphoto", "frankrey11", "fredsilva007", "g4tzbr", "gabrielmilego", "game3x3", "greengineer",
+  "gtpacheko17", "handrehermann", "hevelyn.jeeh", "hive-br", "hive-br.leo", "hivebr.spt", "hive-br.voter", "hranhuk",
+  "imagemvirtual", "ismaelrd04", "iuriomagico", "j377e", "jacalf", "jaopalas", "jaquevital", "jarmeson", "jeffparajiujitsu",
+  "jkatrina", "jklio123", "joaophelip", "joaoprobst", "jontv", "jose.music", "josiva", "jsaez", "jsantana", "jucabala",
+  "juliasantos", "jullyette", "kaibagt", "kat.eli", "kaveira", "kelday666", "kevbest", "kingforceblack", "kojiri", "laribf",
+  "laurasoares", "legalizabrazil", "leo.marques", "lesulzbacher", "lincemarrom", "lipe100dedos", "liquideity", "litekoiner",
+  "lobaobh", "luanaecard", "ludgero", "luidimarg", "luizeba", "luizhadad", "maismau", "marianaemilia", "markitoelias",
+  "marzukiali", "matheusggr", "matheusggr.leo", "matheusluciano", "mathfb", "mauriciolimax", "megamariano", "meinickenutri",
+  "mengao", "michupa", "micloop", "milery", "mrprofessor", "mrprofessordaily", "nane-qts", "naoebemumcanal", "nascimentoab",
+  "nascimentocb", "nathylieth", "nayha23", "nichollasrdo", "norseland", "officialjag", "oficialversatil", "orozcorobetson",
+  "pablito.saldo", "papoprodutivo", "paradaleticia", "pataty69", "pedagogia", "pedrocanella", "perfilbrasil", "phgnomo",
+  "phsaeta", "pirulito.zoado", "pythomaster", "qyses", "raistling", "rdabrasil", "reas63", "renatacristiane", "rhommar",
+  "rimasx", "robspiercer", "rodrigojmelo", "rounan.soares", "rphspinheiro", "sandranunes", "santana37", "santinhos", "seabet",
+  "selhomarlopes", "shiftrox", "silviamaria", "sintropia", "sistemabusiness", "skaters", "sktbr", "sousafrc", "splinter100dedos",
+  "surfgurupro", "surflimpo", "tankulo", "tatianest", "tatylayla", "teteuzinho", "teu", "thaliaperez", "thomashnblum",
+  "totomusic", "triptamine555", "tucacheias", "ukyron3", "underlock", "unhurried", "unten1995", "usergabs", "vaipraonde",
+  "vanessabarrostec", "vcorioh", "vempromundo", "ventrinidad", "vicvondoom", "vini0", "vitoragnelli", "vonlecram",
+  "wagnertamanaha", "wallabra", "wallabra-wallet", "wasye", "wellingt556", "wilkersk8zn", "wiseagent", "wlfreitas",
+  "xgoivo", "xlety", "xtryhard", "yungbresciani", "zallin", "zombialien"
 ];
-// -----------------------------------------------
+// -------------------------------
 
-const HAF_API = `https://rpc.mahdiyari.info/hafsql/delegations/${ACCOUNT}/incoming?limit=300`;
+const HAF_API = `https://rpc.mahdiyari.info/hafsql/delegations/${VOTER_ACCOUNT}/incoming?limit=300`;
 const HE_RPC = "https://api.hive-engine.com/rpc/contracts";
 
 const RPC_NODES = [
@@ -311,8 +102,7 @@ async function fetchHiveEngineBalances(accounts, symbol) {
 }
 
 async function fetchVoteHistory(voterAccount) {
-  console.log(`🔎 Buscando histórico de votos (4.000 ops)...`);
-  
+  console.log(`🔎 Buscando histórico de votos...`);
   let fullHistory = [];
   let start = -1; 
   const batchSize = 1000; 
@@ -321,11 +111,8 @@ async function fetchVoteHistory(voterAccount) {
   for (let i = 0; i < maxBatches; i++) {
     const batch = await hiveRpc("condenser_api.get_account_history", [voterAccount, start, batchSize]);
     if (!batch || batch.length === 0) break;
-
     fullHistory = fullHistory.concat(batch);
-    const firstItem = batch[0];
-    const firstId = firstItem[0];
-    start = firstId - 1;
+    start = batch[0][0] - 1;
     if (start < 0) break;
   }
 
@@ -336,65 +123,59 @@ async function fetchVoteHistory(voterAccount) {
   fullHistory.forEach(tx => {
     const op = tx[1].op;
     const timestamp = tx[1].timestamp;
-    
     if (op[0] === 'vote' && op[1].voter === voterAccount) {
       const author = op[1].author;
       if (!voteStats[author]) voteStats[author] = { count_30d: 0, last_vote_ts: null };
-      
       if (!voteStats[author].last_vote_ts || timestamp > voteStats[author].last_vote_ts) {
         voteStats[author].last_vote_ts = timestamp;
       }
-
       const voteDate = new Date(timestamp + (timestamp.endsWith("Z") ? "" : "Z"));
-      if (voteDate >= thirtyDaysAgo) {
-        voteStats[author].count_30d += 1;
-      }
+      if (voteDate >= thirtyDaysAgo) voteStats[author].count_30d += 1;
     }
   });
-  
   return voteStats;
 }
 
 async function run() {
   try {
-    console.log(`1. 🔄 HAFSQL + Lista Fixa...`);
+    console.log(`1. 🔄 Buscando dados...`);
     const res = await fetch(HAF_API);
-    let delegationsData = await res.json(); // Usamos let para poder modificar
-
+    let delegationsData = await res.json();
     if (!Array.isArray(delegationsData)) delegationsData = [];
 
-    // --- LÓGICA DE FUSÃO DE LISTA FIXA ---
     const currentDelegators = new Set(delegationsData.map(d => d.delegator));
     
+    // Fusão da lista fixa com a lista da API
     FIXED_USERS.forEach(fixedUser => {
-      // Se o usuário fixo NÃO estiver na lista da API, adicionamos manualmente
       if (!currentDelegators.has(fixedUser)) {
-        console.log(`➕ Adicionando usuário fixo: ${fixedUser}`);
-        delegationsData.push({
-          delegator: fixedUser,
-          hp_equivalent: 0, // Sem delegação ativa
-          timestamp: new Date().toISOString() // Data de hoje
+        delegationsData.push({ 
+            delegator: fixedUser, 
+            hp_equivalent: 0, 
+            timestamp: new Date().toISOString() 
         });
       }
     });
-    // --------------------------------------
 
     const userNames = delegationsData.map(d => d.delegator);
 
-    console.log(`2. 🌍 Hive RPC (Dados)...`);
+    console.log(`2. 🌍 Dados Globais e Projeto...`);
     const globals = await hiveRpc("condenser_api.get_dynamic_global_properties", []);
     let vestToHp = 0.0005; 
     if (globals) vestToHp = parseFloat(globals.total_vesting_fund_hive) / parseFloat(globals.total_vesting_shares);
 
-    const accounts = await hiveRpc("condenser_api.get_accounts", [userNames]);
+    // Busca dados dos delegadores E da conta do projeto
+    const allAccountsToFetch = [...userNames, PROJECT_ACCOUNT];
+    // Dividir em lotes se a lista ficar muito grande (segurança futura)
+    const accounts = await hiveRpc("condenser_api.get_accounts", [allAccountsToFetch]);
     
     const accountDetails = {};
+    let projectHp = 0;
+
     if (accounts) {
         accounts.forEach(acc => {
-            accountDetails[acc.name] = {
-                hp: parseFloat(acc.vesting_shares) * vestToHp,
-                last_post: acc.last_post 
-            };
+            const hp = parseFloat(acc.vesting_shares) * vestToHp;
+            if (acc.name === PROJECT_ACCOUNT) projectHp = hp;
+            accountDetails[acc.name] = { hp: hp, last_post: acc.last_post };
         });
     }
 
@@ -404,7 +185,7 @@ async function run() {
     heBalances.forEach(b => { tokenMap[b.account] = parseFloat(b.stake || 0); });
 
     console.log(`4. 🗳️ Curadoria...`);
-    const curationMap = await fetchVoteHistory(ACCOUNT);
+    const curationMap = await fetchVoteHistory(VOTER_ACCOUNT);
 
     const finalData = delegationsData
       .map(item => {
@@ -419,8 +200,7 @@ async function run() {
           token_balance: tokenMap[item.delegator] || 0,
           timestamp: item.timestamp,
           last_vote_date: voteInfo.last_vote_ts,
-          votes_month: voteInfo.count_30d,
-          is_fixed: FIXED_USERS.includes(item.delegator) // Flag útil para o futuro
+          votes_month: voteInfo.count_30d
         };
       })
       .sort((a, b) => b.delegated_hp - a.delegated_hp);
@@ -429,13 +209,14 @@ async function run() {
     
     const metaData = {
       last_updated: new Date().toISOString(),
-      total_delegators: finalData.length,
+      total_delegators: finalData.filter(d => d.delegated_hp > 0).length,
       total_hp: finalData.reduce((acc, curr) => acc + curr.delegated_hp, 0),
-      total_hbr_staked: finalData.reduce((acc, curr) => acc + curr.token_balance, 0)
+      total_hbr_staked: finalData.reduce((acc, curr) => acc + curr.token_balance, 0),
+      project_account_hp: projectHp
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
 
-    console.log("✅ Dados salvos (Lista Fixa integrada)!");
+    console.log("✅ Dados salvos com lista fixa!");
 
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
