@@ -23,24 +23,34 @@
             <img src="https://images.hive.blog/u/hive-br/avatar/small" alt="Hive BR">
         </div>
         <div class="project-info">
-            <h3>PODER DE VOTO (@hive-br)</h3>
-            <p id="stat-project-hp">0 HP</p>
+            <h3>PODER DE VOTO DA COMUNIDADE</h3>
+            <p id="stat-community-power">0 HP</p>
         </div>
       </div>
     </div>
 
     <div class="stats-grid">
+      
       <div class="stat-card">
-        <h3>Total Delegado</h3>
-        <p id="stat-total-hp">0 HP</p>
+        <h3>HP Próprio</h3>
+        <p id="stat-own-hp" style="color: #4da6ff;">0 HP</p>
       </div>
+
       <div class="stat-card">
-        <h3>Delegadores Ativos</h3> <p id="stat-count">0</p>
+        <h3>HP Delegado</h3>
+        <p id="stat-delegated-hp" style="color:var(--accent-purple);">0 HP</p>
       </div>
+
+      <div class="stat-card">
+        <h3>Delegadores Ativos</h3>
+        <p id="stat-count">0</p>
+      </div>
+
       <div class="stat-card">
         <h3>Destaque do Mês</h3>
         <p id="stat-growth">—</p>
       </div>
+
     </div>
 
     <div id="activity-panel" class="activity-container" style="display:none;">
@@ -71,14 +81,10 @@
             <th class="sortable" onclick="handleSort('timestamp')">TEMPO<br><small>(Delegação)</small> <span class="sort-icon"></span></th>
             <th class="sortable" onclick="handleSort('total_account_hp')">HP Próprio<br><small>(Total)</small> <span class="sort-icon"></span></th>
             <th class="sortable" onclick="handleSort('token_balance')">HBR<br><small>(Em Stake)</small> <span class="sort-icon"></span></th>
-            
             <th class="sortable" onclick="handleSort('last_user_post')">Último Post<br><small>(Data)</small> <span class="sort-icon"></span></th>
-            
             <th class="sortable" onclick="handleSort('last_vote_date')">Curadoria<br><small>(Último UTC | 30d)</small> <span class="sort-icon"></span></th>
-            
             <th class="sortable" onclick="handleSort('delegated_hp')">Bônus de<br>Delegação <span class="sort-icon"></span></th>
             <th class="sortable" onclick="handleSort('token_balance')">Bônus<br>HBR <span class="sort-icon"></span></th>
-            
             <th>Histórico de<br>Delegação</th>
           </tr>
         </thead>
