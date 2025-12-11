@@ -30,27 +30,22 @@
     </div>
 
     <div class="stats-grid">
-      
       <div class="stat-card">
         <h3>HP Próprio</h3>
         <p id="stat-own-hp" style="color: #4da6ff;">0 HP</p>
       </div>
-
       <div class="stat-card">
         <h3>HP Delegado</h3>
         <p id="stat-delegated-hp" style="color:var(--accent-purple);">0 HP</p>
       </div>
-
       <div class="stat-card">
         <h3>Delegadores Ativos</h3>
         <p id="stat-count">0</p>
       </div>
-
       <div class="stat-card">
         <h3>Destaque do Mês</h3>
         <p id="stat-growth">—</p>
       </div>
-
     </div>
 
     <div id="activity-panel" class="activity-container" style="display:none;">
@@ -69,14 +64,15 @@
     </div>
 
     <div class="search-container">
-      <input type="text" id="search-input" placeholder="🔍 Buscar delegador..." autocomplete="off">
+      <input type="text" id="search-input" placeholder="🔍 Buscar usuário..." autocomplete="off">
     </div>
 
     <div class="table-wrapper">
       <table id="main-table">
         <thead>
           <tr>
-            <th class="sticky-col sortable" onclick="handleSort('delegator')">Delegador <span class="sort-icon"></span></th>
+            <th class="sticky-col sortable" onclick="handleSort('delegator')">Usuário <span class="sort-icon"></span></th>
+            
             <th class="sortable" onclick="handleSort('delegated_hp')">Delegação<br><small>Hivebr.voter</small> <span class="sort-icon"></span></th>
             <th class="sortable" onclick="handleSort('timestamp')">TEMPO<br><small>(Delegação)</small> <span class="sort-icon"></span></th>
             <th class="sortable" onclick="handleSort('total_account_hp')">HP Próprio<br><small>(Total)</small> <span class="sort-icon"></span></th>
