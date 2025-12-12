@@ -1,7 +1,7 @@
 /**
- * Script: Fetch Delegations (Unique Votes Fix)
- * Version: 2.6.1
- * Update: Conta apenas 1 voto por post (Permlink único)
+ * Script: Fetch Delegations (Daily Cap Fix)
+ * Version: 2.6.2
+ * Update: Contagem baseada em DIAS com voto (Max 1 por dia)
  */
 
 const fetch = require("node-fetch");
@@ -117,7 +117,7 @@ async function fetchHiveEngineBalances(accounts, symbol) {
 }
 
 async function fetchVoteHistory(voterAccount) {
-  console.log(`🔎 Buscando histórico (12.000 ops) e filtrando duplicatas...`);
+  console.log(`🔎 Buscando histórico (12.000 ops)...`);
   
   let fullHistory = [];
   let start = -1; 
@@ -147,27 +147,27 @@ async function fetchVoteHistory(voterAccount) {
     
     if (op[0] === 'vote' && op[1].voter === voterAccount) {
       const author = op[1].author;
-      const permlink = op[1].permlink; // ID único do post
-
+      
       if (!voteStats[author]) {
           voteStats[author] = { 
               count_30d: 0, 
               last_vote_ts: null,
-              unique_posts: new Set() // Set para guardar posts já votados
+              unique_days: new Set() // MUDANÇA: Set de dias
           };
       }
       
-      // Atualiza data do último voto (se for mais recente)
       if (!voteStats[author].last_vote_ts || timestamp > voteStats[author].last_vote_ts) {
         voteStats[author].last_vote_ts = timestamp;
       }
 
       const voteDate = new Date(timestamp + (timestamp.endsWith("Z") ? "" : "Z"));
       
-      // LÓGICA DE UNICIDADE: Só conta se for nos últimos 30 dias E se ainda não contamos esse post
       if (voteDate >= thirtyDaysAgo) {
-          if (!voteStats[author].unique_posts.has(permlink)) {
-              voteStats[author].unique_posts.add(permlink);
+          // Extrai DIA (YYYY-MM-DD)
+          const dayKey = voteDate.toISOString().slice(0, 10);
+          
+          if (!voteStats[author].unique_days.has(dayKey)) {
+              voteStats[author].unique_days.add(dayKey);
               voteStats[author].count_30d += 1;
           }
       }
@@ -250,7 +250,7 @@ async function run() {
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
 
-    console.log("✅ Dados salvos (Votos Únicos)!");
+    console.log("✅ Dados salvos (Cap Diário de Votos)!");
 
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
