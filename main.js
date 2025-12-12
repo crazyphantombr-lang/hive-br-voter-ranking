@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.6.0
- * Description: Added Curation Trail Column Logic
+ * Version: 2.6.2
+ * Description: Time Display Fix (Floor instead of Ceil)
  */
 
 let globalDelegations = [];
@@ -82,6 +82,8 @@ function calculateLoyalty(username, apiTimestamp, historyData) {
   const lastChange = new Date(apiTimestamp);
   const now = new Date();
   const diffTime = Math.abs(now - lastChange);
+  
+  // FIX: Math.floor para não arredondar 1h para 1 dia
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
 
   let text = "";
@@ -92,7 +94,6 @@ function calculateLoyalty(username, apiTimestamp, historyData) {
   return { days: diffDays, text: text };
 }
 
-// --- FUNÇÃO TRILHA (V2.6.0) ---
 function getTrailBonus(inTrail) {
     if (inTrail) {
         return `<span class="bonus-tag bonus-trail">+5%</span>`;
@@ -122,7 +123,6 @@ function renderTable() {
     
     const delegationBonusHtml = getDelegationBonus(trueRank);
     const hbrBonusHtml = getHbrBonus(hbrStake);
-    // Novo Bônus Trilha
     const trailBonusHtml = getTrailBonus(user.in_curation_trail);
 
     const curationHtml = getCurationStatus(user.last_vote_date, user.votes_month);
@@ -146,9 +146,7 @@ function renderTable() {
       <td>${curationHtml}</td>
       <td>${delegationBonusHtml}</td>
       <td>${hbrBonusHtml}</td>
-      
       <td>${trailBonusHtml}</td>
-      
       <td style="width:140px;">
           <canvas id="${canvasId}" width="120" height="40"></canvas>
       </td>
@@ -166,6 +164,15 @@ function renderTable() {
 
 // --- HELPER FUNCTIONS ---
 
+// FIX: Math.floor também aqui para consistência
+function calculateDuration(dateString) {
+  if (!dateString || dateString.startsWith("1970")) return null; 
+  const start = new Date(dateString.endsWith("Z") ? dateString : dateString + "Z");
+  const now = new Date();
+  const diffTime = Math.abs(now - start);
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
+}
+
 function getCurationStatus(lastVoteDate, count30d) {
   if (lastVoteDate) {
     const daysAgo = calculateDuration(lastVoteDate);
@@ -174,7 +181,10 @@ function getCurationStatus(lastVoteDate, count30d) {
     if (daysAgo <= 3) { color = "#4dff91"; icon = "⚡"; } 
     else if (daysAgo <= 15) { color = "#e6e6ff"; } 
     else { color = "#ffcc00"; icon = "⚠️"; }
+    
+    // Texto corrigido
     const daysText = daysAgo === 0 ? "Hoje" : daysAgo === 1 ? "Ontem" : `${daysAgo}d atrás`;
+    
     return `<div style="line-height:1.2;"><span style="color:${color}; font-weight:bold;">${icon} ${daysText}</span><br><span style="font-size:0.8em; color:#888;">(${count30d} votos/mês)</span></div>`;
   }
   return `<span style="color:#666; font-size:0.8em; opacity:0.5; font-weight:bold;">SEM DADOS</span>`;
@@ -279,14 +289,6 @@ function renderRecentActivity(delegations, historyData) {
     tr.innerHTML = `<td><a href="https://peakd.com/@${change.name}" target="_blank">@${change.name}</a></td><td class="val-muted">${change.old.toFixed(0)}</td><td style="font-weight:bold">${change.new.toFixed(0)}</td><td class="${diffClass}">${signal}${change.diff.toFixed(0)} HP</td>`;
     tbody.appendChild(tr);
   });
-}
-
-function calculateDuration(dateString) {
-  if (!dateString || dateString.startsWith("1970")) return null; 
-  const start = new Date(dateString.endsWith("Z") ? dateString : dateString + "Z");
-  const now = new Date();
-  const diffTime = Math.abs(now - start);
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
 function getDelegationBonus(rank) {
