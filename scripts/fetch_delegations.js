@@ -1,7 +1,7 @@
 /**
- * Script: Fetch Delegations (Curation Trail Update)
- * Version: 2.6.0
- * Update: Adiciona verificação de seguidores da Trilha de Curadoria (HiveVote)
+ * Script: Fetch Delegations (Unique Votes Fix)
+ * Version: 2.6.1
+ * Update: Conta apenas 1 voto por post (Permlink único)
  */
 
 const fetch = require("node-fetch");
@@ -44,7 +44,7 @@ const FIXED_USERS = [
   "xgoivo", "xlety", "xtryhard", "yungbresciani", "zallin", "zombialien"
 ];
 
-// --- LISTA DA TRILHA DE CURADORIA (Extraída do HiveVote) ---
+// --- LISTA DA TRILHA DE CURADORIA ---
 const CURATION_TRAIL_USERS = [
   "hive-br", "kaibagt", "matheusggr.leo", "matheusggr", "elderdark", "shiftrox", "zallin", "vempromundo", 
   "syel25", "arthursiq5", "lucasqz", "luizeba", "crazyphantombr", "nane-qts", "us3incanada", "lilico", 
@@ -59,7 +59,6 @@ const CURATION_TRAIL_USERS = [
   "chuchochucho", "sofia.perola", "scumflowerboy", "itznur", "luizvitao", "reibar", "geovanna-gg", 
   "xeraixupa", "skaters"
 ];
-// ------------------------------------------------------------
 
 const HAF_API = `https://rpc.mahdiyari.info/hafsql/delegations/${VOTER_ACCOUNT}/incoming?limit=300`;
 const HE_RPC = "https://api.hive-engine.com/rpc/contracts";
@@ -118,7 +117,7 @@ async function fetchHiveEngineBalances(accounts, symbol) {
 }
 
 async function fetchVoteHistory(voterAccount) {
-  console.log(`🔎 Buscando histórico profundo (12.000 ops)...`);
+  console.log(`🔎 Buscando histórico (12.000 ops) e filtrando duplicatas...`);
   
   let fullHistory = [];
   let start = -1; 
@@ -133,12 +132,13 @@ async function fetchVoteHistory(voterAccount) {
     const firstItem = batch[0];
     const firstId = firstItem[0];
     start = firstId - 1;
-    console.log(`   Batch ${i+1}/${maxBatches}: Recebidos ${batch.length}. Próximo ID: ${start}`);
+    console.log(`   Batch ${i+1}/${maxBatches}: Recebidos ${batch.length}.`);
     if (start < 0) break;
   }
 
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
   const voteStats = {}; 
 
   fullHistory.forEach(tx => {
@@ -147,15 +147,29 @@ async function fetchVoteHistory(voterAccount) {
     
     if (op[0] === 'vote' && op[1].voter === voterAccount) {
       const author = op[1].author;
-      if (!voteStats[author]) voteStats[author] = { count_30d: 0, last_vote_ts: null };
+      const permlink = op[1].permlink; // ID único do post
+
+      if (!voteStats[author]) {
+          voteStats[author] = { 
+              count_30d: 0, 
+              last_vote_ts: null,
+              unique_posts: new Set() // Set para guardar posts já votados
+          };
+      }
       
+      // Atualiza data do último voto (se for mais recente)
       if (!voteStats[author].last_vote_ts || timestamp > voteStats[author].last_vote_ts) {
         voteStats[author].last_vote_ts = timestamp;
       }
 
       const voteDate = new Date(timestamp + (timestamp.endsWith("Z") ? "" : "Z"));
+      
+      // LÓGICA DE UNICIDADE: Só conta se for nos últimos 30 dias E se ainda não contamos esse post
       if (voteDate >= thirtyDaysAgo) {
-        voteStats[author].count_30d += 1;
+          if (!voteStats[author].unique_posts.has(permlink)) {
+              voteStats[author].unique_posts.add(permlink);
+              voteStats[author].count_30d += 1;
+          }
       }
     }
   });
@@ -173,13 +187,13 @@ async function run() {
     const currentDelegators = new Set(delegationsData.map(d => d.delegator));
     FIXED_USERS.forEach(fixedUser => {
       if (!currentDelegators.has(fixedUser)) {
-        delegationsData.push({ delegator: fixedUser, hp_equivalent: 0, timestamp: null }); // Timestamp null para fixos
+        delegationsData.push({ delegator: fixedUser, hp_equivalent: 0, timestamp: null });
       }
     });
 
     const userNames = delegationsData.map(d => d.delegator);
 
-    console.log(`2. 🌍 Hive RPC (Dados Globais)...`);
+    console.log(`2. 🌍 Hive RPC...`);
     const globals = await hiveRpc("condenser_api.get_dynamic_global_properties", []);
     let vestToHp = 0.0005; 
     if (globals) vestToHp = parseFloat(globals.total_vesting_fund_hive) / parseFloat(globals.total_vesting_shares);
@@ -198,12 +212,12 @@ async function run() {
         });
     }
 
-    console.log(`3. 🪙 Hive-Engine (Tokens)...`);
+    console.log(`3. 🪙 Hive-Engine...`);
     const heBalances = await fetchHiveEngineBalances(userNames, TOKEN_SYMBOL);
     const tokenMap = {};
     heBalances.forEach(b => { tokenMap[b.account] = parseFloat(b.stake || 0); });
 
-    console.log(`4. 🗳️ Histórico de Curadoria...`);
+    console.log(`4. 🗳️ Curadoria (Smart Count)...`);
     const curationMap = await fetchVoteHistory(VOTER_ACCOUNT);
 
     const finalData = delegationsData
@@ -220,7 +234,6 @@ async function run() {
           timestamp: item.timestamp,
           last_vote_date: voteInfo.last_vote_ts,
           votes_month: voteInfo.count_30d,
-          // Verifica se está na lista de curadoria (TRILHA)
           in_curation_trail: CURATION_TRAIL_USERS.includes(item.delegator)
         };
       })
@@ -237,7 +250,7 @@ async function run() {
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
 
-    console.log("✅ Dados salvos (Trilha de Curadoria atualizada)!");
+    console.log("✅ Dados salvos (Votos Únicos)!");
 
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
