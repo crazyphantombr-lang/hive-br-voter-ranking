@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.5.0
- * Description: Precision Time & UI Fixes
+ * Version: 2.5.1
+ * Description: Simplified Curation Status (Removes Pending/Inactive logic)
  */
 
 let globalDelegations = [];
@@ -76,15 +76,12 @@ function updateStats(delegations, meta, historyData) {
   }
 }
 
-// --- LÓGICA DE TEMPO PRECISA (V2.5.0) ---
 function calculateLoyalty(username, apiTimestamp, historyData) {
-  if (!apiTimestamp) return { days: 0, text: "—" }; // Se não tem data, mostra traço
+  if (!apiTimestamp) return { days: 0, text: "—" };
 
   const lastChange = new Date(apiTimestamp);
   const now = new Date();
-  
   const diffTime = Math.abs(now - lastChange);
-  // Usamos Math.floor para dias COMPLETOS passados.
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
 
   let text = "";
@@ -117,7 +114,10 @@ function renderTable() {
     
     const delegationBonusHtml = getDelegationBonus(trueRank);
     const hbrBonusHtml = getHbrBonus(hbrStake);
-    const curationHtml = getCurationStatus(user.last_vote_date, user.votes_month, user.last_user_post);
+    
+    // Curadoria Simplificada (Sem Pendente/Inativo)
+    const curationHtml = getCurationStatus(user.last_vote_date, user.votes_month);
+    
     const lastPostHtml = getLastPostStatus(user.last_user_post);
     const hbrStyle = hbrStake > 0 ? "color:#4da6ff; font-weight:bold;" : "color:#444;"; 
 
@@ -131,11 +131,7 @@ function renderTable() {
       <td style="font-weight:bold; font-family:monospace; font-size:1.1em; color:#4dff91;">
           ${user.delegated_hp.toLocaleString("pt-BR", { minimumFractionDigits: 3 })}
       </td>
-      
-      <td style="font-size:0.9em;">
-          ${durationHtml}
-      </td>
-
+      <td style="font-size:0.9em;">${durationHtml}</td>
       <td style="font-family:monospace; color:#888;">${ownHp.toLocaleString("pt-BR", { maximumFractionDigits: 0 })} HP</td>
       <td style="font-family:monospace; ${hbrStyle}">${hbrStake.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 3 })}</td>
       <td>${lastPostHtml}</td>
@@ -158,6 +154,23 @@ function renderTable() {
 }
 
 // --- HELPER FUNCTIONS ---
+
+// Função Simplificada para Curadoria (V2.5.1)
+function getCurationStatus(lastVoteDate, count30d) {
+  if (lastVoteDate) {
+    const daysAgo = calculateDuration(lastVoteDate);
+    let color = "#666";
+    let icon = "";
+    if (daysAgo <= 3) { color = "#4dff91"; icon = "⚡"; } 
+    else if (daysAgo <= 15) { color = "#e6e6ff"; } 
+    else { color = "#ffcc00"; icon = "⚠️"; }
+    const daysText = daysAgo === 0 ? "Hoje" : daysAgo === 1 ? "Ontem" : `${daysAgo}d atrás`;
+    return `<div style="line-height:1.2;"><span style="color:${color}; font-weight:bold;">${icon} ${daysText}</span><br><span style="font-size:0.8em; color:#888;">(${count30d} votos/mês)</span></div>`;
+  }
+  
+  // Se não tem voto, mostra apenas "SEM DADOS" discreto
+  return `<span style="color:#666; font-size:0.8em; opacity:0.5; font-weight:bold;">SEM DADOS</span>`;
+}
 
 function getLastPostStatus(dateString) {
     if (!dateString || dateString.startsWith("1970")) {
@@ -281,23 +294,6 @@ function getHbrBonus(stakeBalance) {
   let bonus = Math.floor(stakeBalance / 10);
   if (bonus > 20) bonus = 20;
   return `<span class="bonus-tag bonus-hbr">+${bonus}%</span>`;
-}
-
-function getCurationStatus(lastVoteDate, count30d, lastPostDate) {
-  if (lastVoteDate) {
-    const daysAgo = calculateDuration(lastVoteDate);
-    let color = "#666";
-    let icon = "";
-    if (daysAgo <= 3) { color = "#4dff91"; icon = "⚡"; } 
-    else if (daysAgo <= 15) { color = "#e6e6ff"; } 
-    else { color = "#ffcc00"; icon = "⚠️"; }
-    const daysText = daysAgo === 0 ? "Hoje" : daysAgo === 1 ? "Ontem" : `${daysAgo}d atrás`;
-    return `<div style="line-height:1.2;"><span style="color:${color}; font-weight:bold;">${icon} ${daysText}</span><br><span style="font-size:0.8em; color:#888;">(${count30d} votos/mês)</span></div>`;
-  }
-  const postDaysAgo = calculateDuration(lastPostDate);
-  if (postDaysAgo === null) return `<span style="color:#666; font-size:0.8em;">(Sem Posts)</span>`;
-  if (postDaysAgo > 30) return `<span style="color:#666; font-size:0.85em;">💤 Inativo (${postDaysAgo}d)</span>`;
-  return `<span style="color:#ff4d4d; font-weight:bold; font-size:0.85em;">⚠️ Pendente</span><br><span style="font-size:0.7em; color:#888;">(Post: ${postDaysAgo}d atrás)</span>`;
 }
 
 function getTrueRank(username) {
