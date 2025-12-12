@@ -1,7 +1,7 @@
 /**
- * Script: Fetch Delegations (Full Watchlist)
- * Version: 2.3.1
- * Update: Lista de usuários fixos expandida
+ * Script: Fetch Delegations (Deep History 12k)
+ * Version: 2.5.0
+ * Update: Histórico de votos aumentado para 12.000 operações
  */
 
 const fetch = require("node-fetch");
@@ -67,7 +67,7 @@ async function hiveRpc(method, params) {
         method: "POST",
         body: JSON.stringify({ jsonrpc: "2.0", method: method, params: params, id: 1 }),
         headers: { "Content-Type": "application/json" },
-        timeout: 8000 
+        timeout: 15000 // Timeout aumentado para suportar muitas requisições
       });
       
       if (!response.ok) throw new Error(`Status ${response.status}`);
@@ -102,17 +102,26 @@ async function fetchHiveEngineBalances(accounts, symbol) {
 }
 
 async function fetchVoteHistory(voterAccount) {
-  console.log(`🔎 Buscando histórico de votos...`);
+  console.log(`🔎 Buscando histórico profundo (12.000 ops)...`);
+  
   let fullHistory = [];
   let start = -1; 
   const batchSize = 1000; 
-  const maxBatches = 4;
+  const maxBatches = 12; // AUMENTADO PARA 12.000
 
   for (let i = 0; i < maxBatches; i++) {
     const batch = await hiveRpc("condenser_api.get_account_history", [voterAccount, start, batchSize]);
     if (!batch || batch.length === 0) break;
+
     fullHistory = fullHistory.concat(batch);
-    start = batch[0][0] - 1;
+    // Pega o ID do item mais antigo
+    const firstItem = batch[0];
+    const firstId = firstItem[0];
+    start = firstId - 1;
+    
+    // Log de progresso a cada lote
+    console.log(`   Batch ${i+1}/${maxBatches}: Recebidos ${batch.length}. Próximo ID: ${start}`);
+
     if (start < 0) break;
   }
 
@@ -123,49 +132,47 @@ async function fetchVoteHistory(voterAccount) {
   fullHistory.forEach(tx => {
     const op = tx[1].op;
     const timestamp = tx[1].timestamp;
+    
     if (op[0] === 'vote' && op[1].voter === voterAccount) {
       const author = op[1].author;
       if (!voteStats[author]) voteStats[author] = { count_30d: 0, last_vote_ts: null };
+      
       if (!voteStats[author].last_vote_ts || timestamp > voteStats[author].last_vote_ts) {
         voteStats[author].last_vote_ts = timestamp;
       }
+
       const voteDate = new Date(timestamp + (timestamp.endsWith("Z") ? "" : "Z"));
-      if (voteDate >= thirtyDaysAgo) voteStats[author].count_30d += 1;
+      if (voteDate >= thirtyDaysAgo) {
+        voteStats[author].count_30d += 1;
+      }
     }
   });
+  
   return voteStats;
 }
 
 async function run() {
   try {
-    console.log(`1. 🔄 Buscando dados...`);
+    console.log(`1. 🔄 HAFSQL + Watchlist...`);
     const res = await fetch(HAF_API);
     let delegationsData = await res.json();
     if (!Array.isArray(delegationsData)) delegationsData = [];
 
     const currentDelegators = new Set(delegationsData.map(d => d.delegator));
-    
-    // Fusão da lista fixa com a lista da API
     FIXED_USERS.forEach(fixedUser => {
       if (!currentDelegators.has(fixedUser)) {
-        delegationsData.push({ 
-            delegator: fixedUser, 
-            hp_equivalent: 0, 
-            timestamp: new Date().toISOString() 
-        });
+        delegationsData.push({ delegator: fixedUser, hp_equivalent: 0, timestamp: new Date().toISOString() });
       }
     });
 
     const userNames = delegationsData.map(d => d.delegator);
 
-    console.log(`2. 🌍 Dados Globais e Projeto...`);
+    console.log(`2. 🌍 Hive RPC (Dados Globais)...`);
     const globals = await hiveRpc("condenser_api.get_dynamic_global_properties", []);
     let vestToHp = 0.0005; 
     if (globals) vestToHp = parseFloat(globals.total_vesting_fund_hive) / parseFloat(globals.total_vesting_shares);
 
-    // Busca dados dos delegadores E da conta do projeto
     const allAccountsToFetch = [...userNames, PROJECT_ACCOUNT];
-    // Dividir em lotes se a lista ficar muito grande (segurança futura)
     const accounts = await hiveRpc("condenser_api.get_accounts", [allAccountsToFetch]);
     
     const accountDetails = {};
@@ -179,12 +186,12 @@ async function run() {
         });
     }
 
-    console.log(`3. 🪙 Hive-Engine...`);
+    console.log(`3. 🪙 Hive-Engine (Tokens)...`);
     const heBalances = await fetchHiveEngineBalances(userNames, TOKEN_SYMBOL);
     const tokenMap = {};
     heBalances.forEach(b => { tokenMap[b.account] = parseFloat(b.stake || 0); });
 
-    console.log(`4. 🗳️ Curadoria...`);
+    console.log(`4. 🗳️ Histórico de Curadoria...`);
     const curationMap = await fetchVoteHistory(VOTER_ACCOUNT);
 
     const finalData = delegationsData
@@ -216,7 +223,7 @@ async function run() {
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
 
-    console.log("✅ Dados salvos com lista fixa!");
+    console.log("✅ Dados salvos com sucesso (12k ops)!");
 
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
