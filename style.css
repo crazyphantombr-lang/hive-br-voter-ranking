@@ -1,7 +1,7 @@
 /**
  * Stylesheet: Hive BR Dashboard Theme
- * Version: 2.6.0
- * Update: Added .bonus-trail style
+ * Version: 2.6.5
+ * Update: Wide Layout (PC) & Responsive Mobile Fixes
  */
 
 :root {
@@ -12,7 +12,7 @@
   --accent-red: #ff4d4d;
   --accent-blue: #4da6ff;
   --accent-cyan: #00e5ff;
-  --accent-pink: #ff00ff; /* Nova Cor Trilha */
+  --accent-pink: #ff00ff;
   --text-main: #e6e6ff;
   --text-muted: #a3a3cc;
   --border-color: #2a2a35;
@@ -24,12 +24,20 @@ body {
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
-  padding: 20px;
+  padding: 0; /* Removido padding global para usar melhor o mobile */
+  overflow-x: hidden; /* Evita scroll lateral na página inteira */
 }
 
-.container { max-width: 1200px; margin: 0 auto; }
+/* --- LAYOUT WIDE (PC) --- */
+.container { 
+  width: 96%; /* Ocupa 96% da tela em PCs */
+  max-width: 1800px; /* Limite generoso para telas Ultra-Wide */
+  margin: 20px auto; 
+  padding: 0 10px;
+  box-sizing: border-box;
+}
 
-header { text-align: center; margin-bottom: 40px; }
+header { text-align: center; margin-bottom: 40px; margin-top: 20px; }
 h1 { font-size: 2.5rem; margin: 10px 0; color: #fff; letter-spacing: 2px; }
 .highlight { color: var(--accent-purple); text-shadow: 0 0 15px rgba(157, 78, 255, 0.4); }
 .subtitle { color: var(--text-muted); font-size: 1rem; margin-top: 0; }
@@ -41,7 +49,14 @@ h1 { font-size: 2.5rem; margin: 10px 0; color: #fff; letter-spacing: 2px; }
 .project-info h3 { margin: 0 0 5px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
 .project-info p { margin: 0; font-size: 2.2rem; font-weight: 800; color: #fff; font-family: monospace; }
 
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+/* Stats Grid Responsivo */
+.stats-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Cartões se adaptam */
+  gap: 15px; 
+  margin-bottom: 30px; 
+}
+
 .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
 .stat-card h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 .stat-card p { margin: 0; font-size: 1.8rem; font-weight: 800; color: #fff; }
@@ -61,10 +76,25 @@ h1 { font-size: 2.5rem; margin: 10px 0; color: #fff; letter-spacing: 2px; }
 #search-input { width: 100%; padding: 15px; font-size: 1rem; background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 12px; color: #fff; box-sizing: border-box; transition: all 0.3s ease; }
 #search-input:focus { outline: none; border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(157, 78, 255, 0.2); }
 
-.table-wrapper { width: 100%; overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-table { width: 100%; min-width: 900px; border-collapse: separate; border-spacing: 0; background: var(--bg-card); }
+/* --- TABELA OTIMIZADA --- */
+.table-wrapper { 
+  width: 100%; 
+  overflow-x: auto; /* Scroll horizontal APENAS se necessário (Mobile/Telas pequenas) */
+  border-radius: 12px; 
+  border: 1px solid var(--border-color); 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+  background: var(--bg-card);
+}
 
-th { padding: 16px 20px; text-align: left; color: var(--accent-purple); text-transform: uppercase; font-size: 0.85rem; border-bottom: 2px solid var(--border-color); background-color: #151525; white-space: nowrap; user-select: none; }
+table { 
+  width: 100%; 
+  min-width: 1000px; /* Garante layout fixo mínimo para não quebrar colunas no Mobile */
+  border-collapse: separate; 
+  border-spacing: 0; 
+}
+
+/* Células mais compactas para aproveitar espaço */
+th { padding: 12px 15px; text-align: left; color: var(--accent-purple); text-transform: uppercase; font-size: 0.8rem; border-bottom: 2px solid var(--border-color); background-color: #151525; white-space: nowrap; user-select: none; }
 th.sortable { cursor: pointer; transition: background 0.2s; }
 th.sortable:hover { background-color: #1f1c2e; color: #fff; }
 
@@ -72,35 +102,37 @@ th.sortable:hover { background-color: #1f1c2e; color: #fff; }
 th.asc .sort-icon::after { content: "▲"; opacity: 1; color: var(--accent-green); }
 th.desc .sort-icon::after { content: "▼"; opacity: 1; color: var(--accent-green); }
 
-td { padding: 14px 20px; border-bottom: 1px solid var(--border-color); vertical-align: middle; color: var(--text-muted); }
+td { padding: 10px 15px; border-bottom: 1px solid var(--border-color); vertical-align: middle; color: var(--text-muted); font-size: 0.95rem; }
 tr:hover { background-color: rgba(157, 78, 255, 0.05); }
 tr:hover td { color: #fff; }
 a { color: #fff; text-decoration: none; font-weight: 600; }
 
+/* Coluna Fixa (Usuário) */
 .sticky-col { position: sticky; left: 0; background-color: var(--bg-card); z-index: 5; border-right: 1px solid var(--border-color); box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
 th.sticky-col { background-color: #151525; z-index: 10; }
 tr:hover .sticky-col { background-color: #1a1725; }
 
-.bonus-tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; min-width: 45px; text-align: center; }
+/* Tags e Badges */
+.bonus-tag { display: inline-block; padding: 4px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; min-width: 40px; text-align: center; }
 .bonus-gold { color: #ffd700; border: 1px solid #ffd700; background: rgba(255, 215, 0, 0.1); }
 .bonus-silver { color: #c0c0c0; border: 1px solid #c0c0c0; background: rgba(192, 192, 192, 0.1); }
 .bonus-bronze { color: #cd7f32; border: 1px solid #cd7f32; background: rgba(205, 127, 50, 0.1); }
 .bonus-honor { color: var(--accent-blue); border: 1px solid var(--accent-blue); background: rgba(77, 166, 255, 0.1); }
 .bonus-hbr { color: var(--accent-cyan); border: 1px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.1); box-shadow: 0 0 8px rgba(0, 229, 255, 0.2); }
-
-/* --- NOVO ESTILO TRILHA --- */
-.bonus-trail { 
-    color: var(--accent-pink); 
-    border: 1px solid var(--accent-pink); 
-    background: rgba(255, 0, 255, 0.1); 
-    box-shadow: 0 0 8px rgba(255, 0, 255, 0.2); 
-}
+.bonus-trail { color: var(--accent-pink); border: 1px solid var(--accent-pink); background: rgba(255, 0, 255, 0.1); box-shadow: 0 0 8px rgba(255, 0, 255, 0.2); }
 
 .veteran-badge { color: #ff9f43; border: 1px solid #ff9f43; background: rgba(255, 159, 67, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px; cursor: help; }
 
-@media (max-width: 600px) {
+/* --- RESPONSIVIDADE MOBILE --- */
+@media (max-width: 768px) {
+  .container { width: 100%; padding: 10px; margin: 0; }
   h1 { font-size: 1.8rem; }
-  .stats-grid { grid-template-columns: 1fr; }
+  .project-card { flex-direction: column; text-align: center; padding: 20px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-card p { font-size: 1.4rem; }
+  
+  /* Ajuste no gráfico para mobile */
   canvas { width: 100px !important; }
 }
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
