@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.6.2
- * Description: Time Display Fix (Floor instead of Ceil)
+ * Version: 2.6.3
+ * Description: Sort Fix, Math.floor for Days, Sparkline Colors
  */
 
 let globalDelegations = [];
@@ -82,8 +82,6 @@ function calculateLoyalty(username, apiTimestamp, historyData) {
   const lastChange = new Date(apiTimestamp);
   const now = new Date();
   const diffTime = Math.abs(now - lastChange);
-  
-  // FIX: Math.floor para não arredondar 1h para 1 dia
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
 
   let text = "";
@@ -164,7 +162,6 @@ function renderTable() {
 
 // --- HELPER FUNCTIONS ---
 
-// FIX: Math.floor também aqui para consistência
 function calculateDuration(dateString) {
   if (!dateString || dateString.startsWith("1970")) return null; 
   const start = new Date(dateString.endsWith("Z") ? dateString : dateString + "Z");
@@ -182,7 +179,6 @@ function getCurationStatus(lastVoteDate, count30d) {
     else if (daysAgo <= 15) { color = "#e6e6ff"; } 
     else { color = "#ffcc00"; icon = "⚠️"; }
     
-    // Texto corrigido
     const daysText = daysAgo === 0 ? "Hoje" : daysAgo === 1 ? "Ontem" : `${daysAgo}d atrás`;
     
     return `<div style="line-height:1.2;"><span style="color:${color}; font-weight:bold;">${icon} ${daysText}</span><br><span style="font-size:0.8em; color:#888;">(${count30d} votos/mês)</span></div>`;
@@ -223,9 +219,9 @@ function handleSort(column) {
         valA = loyaltyA;
         valB = loyaltyB;
     } 
-    else if (column === 'last_user_post') {
-        valA = a.last_user_post ? new Date(a.last_user_post).getTime() : 0;
-        valB = b.last_user_post ? new Date(b.last_user_post).getTime() : 0;
+    else if (column === 'last_user_post' || column === 'last_vote_date') {
+        valA = a[column] ? new Date(a[column]).getTime() : 0;
+        valB = b[column] ? new Date(b[column]).getTime() : 0;
     }
     else if (column === 'delegator') {
         valA = valA.toLowerCase();
@@ -328,7 +324,11 @@ function renderSparkline(canvasId, userHistoryObj) {
   const values = sortedDates.map(date => userHistoryObj[date]);
   const last = values[values.length - 1];
   const prev = values.length > 1 ? values[values.length - 2] : last;
-  const color = last >= prev ? '#4dff91' : '#ff4d4d';
+  
+  // Cores: Cinza (Neutro), Verde (Positivo), Vermelho (Negativo)
+  let color = '#888'; 
+  if (last > prev) color = '#4dff91'; 
+  if (last < prev) color = '#ff4d4d'; 
 
   if (window.myCharts && window.myCharts[canvasId]) window.myCharts[canvasId].destroy();
 
