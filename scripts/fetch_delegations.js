@@ -1,7 +1,7 @@
 /**
- * Script: Fetch Delegations (Daily Cap Fix)
- * Version: 2.6.2
- * Update: Contagem baseada em DIAS com voto (Max 1 por dia)
+ * Script: Fetch Delegations (Cumulative Update)
+ * Version: 2.6.3
+ * Update: Contagem de votos por dias únicos (Max 1/dia) + Listas Fixas
  */
 
 const fetch = require("node-fetch");
@@ -152,7 +152,7 @@ async function fetchVoteHistory(voterAccount) {
           voteStats[author] = { 
               count_30d: 0, 
               last_vote_ts: null,
-              unique_days: new Set() // MUDANÇA: Set de dias
+              unique_days: new Set() 
           };
       }
       
@@ -163,7 +163,6 @@ async function fetchVoteHistory(voterAccount) {
       const voteDate = new Date(timestamp + (timestamp.endsWith("Z") ? "" : "Z"));
       
       if (voteDate >= thirtyDaysAgo) {
-          // Extrai DIA (YYYY-MM-DD)
           const dayKey = voteDate.toISOString().slice(0, 10);
           
           if (!voteStats[author].unique_days.has(dayKey)) {
@@ -250,7 +249,7 @@ async function run() {
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
 
-    console.log("✅ Dados salvos (Cap Diário de Votos)!");
+    console.log("✅ Dados salvos (Versão 2.6.3)!");
 
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
