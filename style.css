@@ -1,7 +1,7 @@
 /**
  * Stylesheet: Hive BR Dashboard Theme
- * Version: 2.6.5
- * Update: Wide Layout (PC) & Responsive Mobile Fixes
+ * Version: 2.6.6
+ * Update: Fix responsividade na tabela de atividades (Mobile)
  */
 
 :root {
@@ -24,14 +24,14 @@ body {
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
-  padding: 0; /* Removido padding global para usar melhor o mobile */
-  overflow-x: hidden; /* Evita scroll lateral na página inteira */
+  padding: 0; 
+  overflow-x: hidden; 
 }
 
 /* --- LAYOUT WIDE (PC) --- */
 .container { 
-  width: 96%; /* Ocupa 96% da tela em PCs */
-  max-width: 1800px; /* Limite generoso para telas Ultra-Wide */
+  width: 96%; 
+  max-width: 1800px; 
   margin: 20px auto; 
   padding: 0 10px;
   box-sizing: border-box;
@@ -52,7 +52,7 @@ h1 { font-size: 2.5rem; margin: 10px 0; color: #fff; letter-spacing: 2px; }
 /* Stats Grid Responsivo */
 .stats-grid { 
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Cartões se adaptam */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
   gap: 15px; 
   margin-bottom: 30px; 
 }
@@ -63,11 +63,18 @@ h1 { font-size: 2.5rem; margin: 10px 0; color: #fff; letter-spacing: 2px; }
 #stat-total-hp { color: var(--accent-purple); }
 #stat-growth { color: var(--accent-green); }
 
-.activity-container { margin-bottom: 30px; animation: fadeIn 0.5s ease; }
+/* --- ATIVIDADES RECENTES (FIX MOBILE) --- */
+.activity-container { 
+  margin-bottom: 30px; 
+  animation: fadeIn 0.5s ease;
+  overflow-x: auto; /* Permite rolagem lateral no mobile */
+  -webkit-overflow-scrolling: touch; /* Rolagem suave no iOS */
+  border-radius: 8px; /* Mantém borda arredondada no scroll */
+}
 .section-title { color: var(--text-muted); font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; border-left: 3px solid var(--accent-purple); padding-left: 10px; }
-.activity-table { width: 100%; background: rgba(19, 19, 31, 0.6); border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.9rem; border-collapse: collapse; }
-.activity-table th { background: #151525; padding: 10px 15px; color: var(--text-muted); font-size: 0.8rem; text-align: left; }
-.activity-table td { padding: 10px 15px; border-bottom: 1px solid #222; }
+.activity-table { width: 100%; background: rgba(19, 19, 31, 0.6); border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.9rem; border-collapse: collapse; min-width: 300px; /* Garante largura mínima */ }
+.activity-table th { background: #151525; padding: 10px 15px; color: var(--text-muted); font-size: 0.8rem; text-align: left; white-space: nowrap; }
+.activity-table td { padding: 10px 15px; border-bottom: 1px solid #222; white-space: nowrap; }
 .diff-positive { color: var(--accent-green); font-weight: bold; }
 .diff-negative { color: var(--accent-red); font-weight: bold; }
 .val-muted { color: #666; font-family: monospace; }
@@ -76,10 +83,10 @@ h1 { font-size: 2.5rem; margin: 10px 0; color: #fff; letter-spacing: 2px; }
 #search-input { width: 100%; padding: 15px; font-size: 1rem; background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 12px; color: #fff; box-sizing: border-box; transition: all 0.3s ease; }
 #search-input:focus { outline: none; border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(157, 78, 255, 0.2); }
 
-/* --- TABELA OTIMIZADA --- */
+/* --- TABELA PRINCIPAL --- */
 .table-wrapper { 
   width: 100%; 
-  overflow-x: auto; /* Scroll horizontal APENAS se necessário (Mobile/Telas pequenas) */
+  overflow-x: auto; 
   border-radius: 12px; 
   border: 1px solid var(--border-color); 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
@@ -88,12 +95,11 @@ h1 { font-size: 2.5rem; margin: 10px 0; color: #fff; letter-spacing: 2px; }
 
 table { 
   width: 100%; 
-  min-width: 1000px; /* Garante layout fixo mínimo para não quebrar colunas no Mobile */
+  min-width: 1000px; 
   border-collapse: separate; 
   border-spacing: 0; 
 }
 
-/* Células mais compactas para aproveitar espaço */
 th { padding: 12px 15px; text-align: left; color: var(--accent-purple); text-transform: uppercase; font-size: 0.8rem; border-bottom: 2px solid var(--border-color); background-color: #151525; white-space: nowrap; user-select: none; }
 th.sortable { cursor: pointer; transition: background 0.2s; }
 th.sortable:hover { background-color: #1f1c2e; color: #fff; }
@@ -107,7 +113,6 @@ tr:hover { background-color: rgba(157, 78, 255, 0.05); }
 tr:hover td { color: #fff; }
 a { color: #fff; text-decoration: none; font-weight: 600; }
 
-/* Coluna Fixa (Usuário) */
 .sticky-col { position: sticky; left: 0; background-color: var(--bg-card); z-index: 5; border-right: 1px solid var(--border-color); box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
 th.sticky-col { background-color: #151525; z-index: 10; }
 tr:hover .sticky-col { background-color: #1a1725; }
@@ -131,8 +136,13 @@ tr:hover .sticky-col { background-color: #1a1725; }
   .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .stat-card p { font-size: 1.4rem; }
   
-  /* Ajuste no gráfico para mobile */
   canvas { width: 100px !important; }
+
+  /* Ajuste Fino para Tabela de Atividade no Mobile */
+  .activity-table th, .activity-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
 }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
