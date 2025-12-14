@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.6.3
- * Description: Sort Fix, Math.floor for Days, Sparkline Colors
+ * Version: 2.6.4
+ * Description: URL Updated for 'hive-br-dashboard' migration
  */
 
 let globalDelegations = [];
@@ -9,7 +9,8 @@ let globalHistory = {};
 let currentSort = { column: 'delegated_hp', direction: 'desc' };
 
 async function loadDashboard() {
-  const BASE_URL = "https://crazyphantombr-lang.github.io/hive-br-voter-ranking/data";
+  // ATENÇÃO: URL ATUALIZADA PARA O NOVO REPOSITÓRIO
+  const BASE_URL = "https://crazyphantombr-lang.github.io/hive-br-dashboard/data";
   
   try {
     const [resCurrent, resHistory, resMeta] = await Promise.all([
@@ -31,7 +32,7 @@ async function loadDashboard() {
 
   } catch (err) {
     console.error("Erro no dashboard:", err);
-    document.getElementById("last-updated").innerText = "Erro ao carregar dados.";
+    document.getElementById("last-updated").innerText = "Aguardando migração de DNS ou dados...";
   }
 }
 
@@ -159,8 +160,6 @@ function renderTable() {
     renderSparkline(canvasId, userHistory);
   });
 }
-
-// --- HELPER FUNCTIONS ---
 
 function calculateDuration(dateString) {
   if (!dateString || dateString.startsWith("1970")) return null; 
@@ -325,7 +324,6 @@ function renderSparkline(canvasId, userHistoryObj) {
   const last = values[values.length - 1];
   const prev = values.length > 1 ? values[values.length - 2] : last;
   
-  // Cores: Cinza (Neutro), Verde (Positivo), Vermelho (Negativo)
   let color = '#888'; 
   if (last > prev) color = '#4dff91'; 
   if (last < prev) color = '#ff4d4d'; 
