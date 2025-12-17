@@ -1,15 +1,16 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.7.1
- * Description: Scoped execution (IIFE) to prevent variable conflicts
+ * Version: 2.7.2
+ * Description: Renamed variables & defensive coding to bypass SES/Browser conflicts
  */
 
-(function() {
+;(function() { // Ponto e vírgula defensivo
   "use strict";
 
-  let globalDelegations = [];
-  let globalHistory = {};
-  let currentSort = { column: 'delegated_hp', direction: 'desc' };
+  // Renomeando variáveis para evitar conflito de cache/memória
+  var dashboardData = []; 
+  var dashboardHistory = {};
+  var dashboardSort = { column: 'delegated_hp', direction: 'desc' };
 
   async function loadDashboard() {
     const BASE_URL = "https://crazyphantombr-lang.github.io/hive-br-dashboard/data";
@@ -23,12 +24,12 @@
 
       if (!resCurrent.ok) throw new Error("Erro ao carregar dados.");
 
-      globalDelegations = await resCurrent.json();
-      globalHistory = resHistory.ok ? await resHistory.json() : {};
+      dashboardData = await resCurrent.json();
+      dashboardHistory = resHistory.ok ? await resHistory.json() : {};
       const metaData = resMeta.ok ? await resMeta.json() : null;
 
-      updateStats(globalDelegations, metaData, globalHistory);
-      renderRecentActivity(globalDelegations, globalHistory);
+      updateStats(dashboardData, metaData, dashboardHistory);
+      renderRecentActivity(dashboardData, dashboardHistory);
       renderTable(); 
       setupSearch();
 
@@ -107,14 +108,14 @@
     const tbody = document.getElementById("ranking-body");
     tbody.innerHTML = "";
 
-    globalDelegations.forEach((user, index) => {
+    dashboardData.forEach((user, index) => {
       const rank = index + 1;
       const tr = document.createElement("tr");
       tr.classList.add("delegator-row");
       tr.dataset.name = user.delegator.toLowerCase();
 
       const canvasId = `chart-${user.delegator}`;
-      const loyalty = calculateLoyalty(user.delegator, user.timestamp, globalHistory);
+      const loyalty = calculateLoyalty(user.delegator, user.timestamp, dashboardHistory);
       let durationHtml = loyalty.text;
       
       if (loyalty.days > 365) durationHtml += ` <span class="veteran-badge" title="Estabilidade > 1 ano">🎖️</span>`;
@@ -169,7 +170,7 @@
       `;
       tbody.appendChild(tr);
 
-      let userHistory = globalHistory[user.delegator] || {};
+      let userHistory = dashboardHistory[user.delegator] || {};
       if (Object.keys(userHistory).length === 0) {
          const today = new Date().toISOString().slice(0, 10);
          userHistory = { [today]: user.delegated_hp };
@@ -216,24 +217,22 @@
       return `<span style="color:${color}; font-size:0.9em;">${daysAgo} dias atrás</span>`;
   }
 
-  // A função handleSort precisa ser anexada ao window para o onclick do HTML funcionar
-  // Mas usamos o escopo local para as variáveis
   window.handleSort = function(column) {
-    if (currentSort.column === column) {
-      currentSort.direction = currentSort.direction === 'desc' ? 'asc' : 'desc';
+    if (dashboardSort.column === column) {
+      dashboardSort.direction = dashboardSort.direction === 'desc' ? 'asc' : 'desc';
     } else {
-      currentSort.column = column;
-      currentSort.direction = column === 'delegator' ? 'asc' : 'desc';
+      dashboardSort.column = column;
+      dashboardSort.direction = column === 'delegator' ? 'asc' : 'desc';
     }
-    updateSortIcons(column, currentSort.direction);
+    updateSortIcons(column, dashboardSort.direction);
 
-    globalDelegations.sort((a, b) => {
+    dashboardData.sort((a, b) => {
       let valA = a[column];
       let valB = b[column];
 
       if (column === 'timestamp') {
-          const loyaltyA = calculateLoyalty(a.delegator, a.timestamp, globalHistory).days;
-          const loyaltyB = calculateLoyalty(b.delegator, b.timestamp, globalHistory).days;
+          const loyaltyA = calculateLoyalty(a.delegator, a.timestamp, dashboardHistory).days;
+          const loyaltyB = calculateLoyalty(b.delegator, b.timestamp, dashboardHistory).days;
           valA = loyaltyA;
           valB = loyaltyB;
       } 
@@ -250,8 +249,8 @@
           valB = valB || 0;
       }
 
-      if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
-      if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+      if (valA < valB) return dashboardSort.direction === 'asc' ? -1 : 1;
+      if (valA > valB) return dashboardSort.direction === 'asc' ? 1 : -1;
       return 0;
     });
     renderTable();
@@ -321,7 +320,7 @@
   }
 
   function getTrueRank(username) {
-      const sortedByHp = [...globalDelegations].sort((a, b) => b.delegated_hp - a.delegated_hp);
+      const sortedByHp = [...dashboardData].sort((a, b) => b.delegated_hp - a.delegated_hp);
       return sortedByHp.findIndex(u => u.delegator === username) + 1;
   }
 
@@ -349,8 +348,6 @@
 
     if (window.myCharts && window.myCharts[canvasId]) window.myCharts[canvasId].destroy();
 
-    // Mantemos uma referência global para destruir gráficos antigos,
-    // mas verificamos se window.myCharts existe.
     if (!window.myCharts) window.myCharts = {};
     
     window.myCharts[canvasId] = new Chart(ctx, {
