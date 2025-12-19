@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.8.0
- * Description: Nationality Flags (BR/PT) implemented
+ * Version: 2.9.0
+ * Description: No decimals for Delegated HP & Refactored Base
  */
 
 ;(function() { 
@@ -155,7 +155,7 @@
           ${flagHtml}
         </td>
         <td style="font-weight:bold; font-family:monospace; font-size:1.1em; color:#4dff91;">
-            ${user.delegated_hp.toLocaleString("pt-BR", { minimumFractionDigits: 3 })}
+            ${user.delegated_hp.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}
         </td>
         <td style="font-size:0.9em;">${durationHtml}</td>
         <td style="${ownHpStyle}">${ownHp.toLocaleString("pt-BR", { maximumFractionDigits: 0 })} HP</td>
