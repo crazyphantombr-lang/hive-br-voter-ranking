@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.9.0
- * Description: No decimals for Delegated HP & Refactored Base
+ * Version: 2.10.0
+ * Description: Vote Stats Integration
  */
 
 ;(function() { 
@@ -61,6 +61,13 @@
     
     const activeDelegators = delegations.filter(d => d.delegated_hp > 0).length;
     document.getElementById("stat-count").innerText = activeDelegators;
+
+    // NOVOS STATS DE VOTOS
+    const votesMonth = meta && meta.votes_month ? meta.votes_month : 0;
+    const votes24h = meta && meta.votes_24h ? meta.votes_24h : 0;
+    
+    document.getElementById("stat-votes-month").innerText = votesMonth;
+    document.getElementById("stat-votes-24h").innerText = votes24h;
 
     let bestGrower = { name: "—", val: 0 };
     delegations.forEach(user => {
@@ -123,7 +130,6 @@
       const ownHp = user.total_account_hp || 0;
       const hbrStake = user.token_balance || 0;
       
-      // Power Down
       const pdDate = user.next_withdrawal;
       let ownHpStyle = "font-family:monospace; color:#888;";
       let pdHtml = `<span style="opacity:0.2">—</span>`;
@@ -133,7 +139,6 @@
           pdHtml = `<span style="color:#ff4d4d; font-size:0.85em;">📉 ${dateObj.toLocaleDateString("pt-BR")}</span>`;
       }
 
-      // Bandeira de Nacionalidade
       let flagHtml = "";
       if (user.country_code === "BR") flagHtml = `<span title="Brasil" style="margin-left:5px; font-size:1.1em;">🇧🇷</span>`;
       if (user.country_code === "PT") flagHtml = `<span title="Portugal" style="margin-left:5px; font-size:1.1em;">🇵🇹</span>`;
