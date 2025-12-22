@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.10.0
- * Description: Vote Stats Integration
+ * Version: 2.11.0
+ * Description: Separated Curation Stats & Dynamic Month Names
  */
 
 ;(function() { 
@@ -39,6 +39,15 @@
     }
   }
 
+  function getMonthName(subtractMonths) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - subtractMonths);
+      // Retorna nome do mês em PT-BR (ex: "dezembro", "novembro")
+      const monthName = d.toLocaleString('pt-BR', { month: 'long' });
+      // Capitaliza a primeira letra
+      return monthName.charAt(0).toUpperCase() + monthName.slice(1);
+  }
+
   function updateStats(delegations, meta, historyData) {
     const dateEl = document.getElementById("last-updated");
     if (meta && meta.last_updated) {
@@ -62,13 +71,24 @@
     const activeDelegators = delegations.filter(d => d.delegated_hp > 0).length;
     document.getElementById("stat-count").innerText = activeDelegators;
 
-    // NOVOS STATS DE VOTOS
-    const votesMonth = meta && meta.votes_month ? meta.votes_month : 0;
-    const votes24h = meta && meta.votes_24h ? meta.votes_24h : 0;
-    
-    document.getElementById("stat-votes-month").innerText = votesMonth;
-    document.getElementById("stat-votes-24h").innerText = votes24h;
+    // --- ESTATÍSTICAS DE CURADORIA (VOTOS) ---
+    const v24h = meta && meta.votes_24h ? meta.votes_24h : 0;
+    const vCurr = meta && meta.votes_month_current ? meta.votes_month_current : 0;
+    const vM1   = meta && meta.votes_month_prev1 ? meta.votes_month_prev1 : 0;
+    const vM2   = meta && meta.votes_month_prev2 ? meta.votes_month_prev2 : 0;
 
+    // Textos Dinâmicos dos Meses
+    document.getElementById("lbl-votes-current").innerText = `VOTOS DISTRIBUÍDOS EM ${getMonthName(0).toUpperCase()}`;
+    document.getElementById("lbl-votes-m1").innerText = `Votos em ${getMonthName(1)}`;
+    document.getElementById("lbl-votes-m2").innerText = `Votos em ${getMonthName(2)}`;
+
+    // Valores
+    document.getElementById("stat-votes-current").innerText = vCurr;
+    document.getElementById("stat-votes-24h").innerText = v24h;
+    document.getElementById("stat-votes-m1").innerText = vM1;
+    document.getElementById("stat-votes-m2").innerText = vM2;
+
+    // --- DELEGADOR DESTAQUE ---
     let bestGrower = { name: "—", val: 0 };
     delegations.forEach(user => {
       const hist = historyData[user.delegator];
@@ -89,24 +109,19 @@
 
   function calculateLoyalty(username, apiTimestamp, historyData) {
     if (!apiTimestamp) return { days: 0, text: "—" };
-
     const lastChange = new Date(apiTimestamp);
     const now = new Date();
     const diffTime = Math.abs(now - lastChange);
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
-
     let text = "";
     if (diffDays === 0) text = "Hoje";
     else if (diffDays === 1) text = "1 dia";
     else text = `${diffDays} dias`;
-
     return { days: diffDays, text: text };
   }
 
   function getTrailBonus(inTrail) {
-      if (inTrail) {
-          return `<span class="bonus-tag bonus-trail">+5%</span>`;
-      }
+      if (inTrail) return `<span class="bonus-tag bonus-trail">+5%</span>`;
       return `<span style="opacity:0.3; font-size:0.8em">—</span>`;
   }
 
