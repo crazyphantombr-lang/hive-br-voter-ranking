@@ -1,7 +1,7 @@
 /**
- * Script: Fetch Delegations (History Buckets)
- * Version: 2.11.0
- * Update: Contagem de votos separada por meses (Atual, M-1, M-2)
+ * Script: Fetch Delegations (Nationality Certification)
+ * Version: 2.13.0
+ * Update: Distinção entre BR/PT Manual (Certificado) e Automático
  */
 
 const fetch = require("node-fetch");
@@ -63,16 +63,37 @@ async function fetchHiveEngineBalances(accounts, symbol) {
 }
 
 function detectNationality(username, jsonMetadata) {
-    if (MANUAL_BR_LIST.includes(username)) return "BR";
-    if (MANUAL_PT_LIST.includes(username)) return "PT";
+    // 1. Checagem Manual (Retorna código CERTIFICADO)
+    if (MANUAL_BR_LIST.includes(username)) return "BR_CERT";
+    if (MANUAL_PT_LIST.includes(username)) return "PT_CERT";
+
+    // 2. Extração de Metadata
     let location = "";
-    if (jsonMetadata) { try { location = JSON.parse(jsonMetadata).profile.location.toLowerCase(); } catch (e) {} }
+    if (jsonMetadata) { 
+        try { 
+            const meta = JSON.parse(jsonMetadata);
+            if (meta && meta.profile && meta.profile.location) {
+                location = meta.profile.location.toLowerCase(); 
+            }
+        } catch (e) {} 
+    }
     if (!location) return null;
-    if (location.includes("portugal") || location.includes("lisboa") || location.includes("lisbon") || location.includes("porto") || location.includes("coimbra") || location.includes("braga")) return "PT";
+
+    // 3. Detecção Automática (Retorna código PADRÃO)
+    if (location.includes("portugal") || location.includes("lisboa") || location.includes("lisbon") || 
+        location.includes("porto") || location.includes("coimbra") || location.includes("braga") || 
+        location.includes("algarve") || location.includes("madeira") || location.includes("açores")) {
+        return "PT";
+    }
+
     const brTerms = ["brasil", "brazil", "são paulo", "rio de janeiro", "minas gerais", "paraná", "sul", "bahia", "curitiba", "floripa", "brasilia", "salvador", "recife", "fortaleza", "manaus", "goiania"];
     for (const term of brTerms) { if (location.includes(term)) return "BR"; }
+
     const stateSiglas = ["sp", "rj", "mg", "pr", "sc", "rs", "ba", "pe", "ce", "df", "go", "es"];
-    for (const sigla of stateSiglas) { if (new RegExp(`\\b${sigla}\\b`, 'i').test(location)) return "BR"; }
+    for (const sigla of stateSiglas) { 
+        if (new RegExp(`\\b${sigla}\\b`, 'i').test(location)) return "BR"; 
+    }
+    
     return null;
 }
 
@@ -80,7 +101,7 @@ async function fetchVoteHistory(voterAccount) {
   let fullHistory = [];
   let start = -1; 
   const batchSize = 1000; 
-  const maxBatches = 20; // Aumentado para cobrir 3 meses
+  const maxBatches = 20; 
 
   for (let i = 0; i < maxBatches; i++) {
     const batch = await hiveRpc("condenser_api.get_account_history", [voterAccount, start, batchSize]);
@@ -93,26 +114,14 @@ async function fetchVoteHistory(voterAccount) {
   }
 
   const now = new Date();
-  
-  // Marcos Temporais
-  const oneDayAgo = new Date();
-  oneDayAgo.setDate(now.getDate() - 1);
-
-  // Meses (0 = Atual, 1 = Passado, 2 = Retrasado)
+  const oneDayAgo = new Date(); oneDayAgo.setDate(now.getDate() - 1);
   const month0_Start = new Date(now.getFullYear(), now.getMonth(), 1);
   const month1_Start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const month2_Start = new Date(now.getFullYear(), now.getMonth() - 2, 1);
 
   const voteStats = {};
-  
-  let votes_24h = 0;
-  let votes_month0 = 0;
-  let votes_month1 = 0;
-  let votes_month2 = 0;
-
-  // 30 dias para a tabela de delegação
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(now.getDate() - 30);
+  let votes_24h = 0, votes_month0 = 0, votes_month1 = 0, votes_month2 = 0;
+  const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(now.getDate() - 30);
 
   fullHistory.forEach(tx => {
     const op = tx[1].op;
@@ -120,20 +129,11 @@ async function fetchVoteHistory(voterAccount) {
     
     if (op[0] === 'vote' && op[1].voter === voterAccount) {
       const voteDate = new Date(timestamp + (timestamp.endsWith("Z") ? "" : "Z"));
-      
-      // Contadores de Tempo
       if (voteDate >= oneDayAgo) votes_24h++;
-      
-      // Lógica de Meses (Buckets)
-      if (voteDate >= month0_Start) {
-        votes_month0++;
-      } else if (voteDate >= month1_Start && voteDate < month0_Start) {
-        votes_month1++;
-      } else if (voteDate >= month2_Start && voteDate < month1_Start) {
-        votes_month2++;
-      }
+      if (voteDate >= month0_Start) votes_month0++;
+      else if (voteDate >= month1_Start) votes_month1++;
+      else if (voteDate >= month2_Start) votes_month2++;
 
-      // Stats para Tabela
       const author = op[1].author;
       if (!voteStats[author]) { voteStats[author] = { count_30d: 0, last_vote_ts: null, unique_days: new Set() }; }
       if (!voteStats[author].last_vote_ts || timestamp > voteStats[author].last_vote_ts) { voteStats[author].last_vote_ts = timestamp; }
@@ -148,13 +148,7 @@ async function fetchVoteHistory(voterAccount) {
     }
   });
   
-  return { 
-      stats: voteStats, 
-      votes_24h, 
-      votes_month0, 
-      votes_month1, 
-      votes_month2 
-  };
+  return { stats: voteStats, votes_24h, votes_month0, votes_month1, votes_month2 };
 }
 
 async function run() {
@@ -219,21 +213,19 @@ async function run() {
 
     fs.writeFileSync(path.join(DATA_DIR, "current.json"), JSON.stringify(finalData, null, 2));
     
-    // META DATA com Histórico de Votos
     const metaData = {
       last_updated: new Date().toISOString(),
       total_delegators: finalData.filter(d => d.delegated_hp > 0).length,
       total_hp: finalData.reduce((acc, curr) => acc + curr.delegated_hp, 0),
       total_hbr_staked: finalData.reduce((acc, curr) => acc + curr.token_balance, 0),
       project_account_hp: projectHp,
-      // Novos campos
       votes_24h: voteData.votes_24h,
       votes_month_current: voteData.votes_month0,
       votes_month_prev1: voteData.votes_month1,
       votes_month_prev2: voteData.votes_month2
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
-    console.log("✅ Dados salvos (Versão 2.11.0)!");
+    console.log("✅ Dados salvos (Versão 2.13.0)!");
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
     process.exit(1);
