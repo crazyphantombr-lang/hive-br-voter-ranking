@@ -1,7 +1,7 @@
 /**
  * Script: Main Frontend Logic
- * Version: 2.13.0
- * Description: Certified vs Pending Nationality Flags (Grayscale Logic)
+ * Version: 2.16.0
+ * Update: Tooltip text updates ("Reconhecido" / "Apresentação")
  */
 
 ;(function() { 
@@ -148,19 +148,19 @@
           pdHtml = `<span style="color:#ff4d4d; font-size:0.85em;">📉 ${dateObj.toLocaleDateString("pt-BR")}</span>`;
       }
 
-      // --- LÓGICA DE BANDEIRAS ---
+      // --- ATUALIZAÇÃO DE LEGENDAS (V2.16.0) ---
       let flagHtml = "";
       if (user.country_code === "BR_CERT") {
-        flagHtml = `<span title="Brasileiro certificado" style="margin-left:5px; font-size:1.1em; cursor:help;">🇧🇷</span>`;
+        flagHtml = `<span title="Brasileiro reconhecido na comunidade" style="margin-left:5px; font-size:1.1em; cursor:help;">🇧🇷</span>`;
       } 
       else if (user.country_code === "BR") {
-        flagHtml = `<span class="flag-bw" title="Pendente de verificação" style="margin-left:5px; font-size:1.1em; cursor:help;">🇧🇷</span>`;
+        flagHtml = `<span class="flag-bw" title="Pendente de apresentação nos chats da comunidade" style="margin-left:5px; font-size:1.1em; cursor:help;">🇧🇷</span>`;
       } 
       else if (user.country_code === "PT_CERT") {
-        flagHtml = `<span title="Português certificado" style="margin-left:5px; font-size:1.1em; cursor:help;">🇵🇹</span>`;
+        flagHtml = `<span title="Português reconhecido na comunidade" style="margin-left:5px; font-size:1.1em; cursor:help;">🇵🇹</span>`;
       } 
       else if (user.country_code === "PT") {
-        flagHtml = `<span class="flag-bw" title="Pendente de verificação" style="margin-left:5px; font-size:1.1em; cursor:help;">🇵🇹</span>`;
+        flagHtml = `<span class="flag-bw" title="Pendente de apresentação nos chats da comunidade" style="margin-left:5px; font-size:1.1em; cursor:help;">🇵🇹</span>`;
       }
 
       const delegationBonusHtml = getDelegationBonus(trueRank);
