@@ -1,7 +1,16 @@
 {
-  "name": "hive-br-voter-ranking",
-  "type": "commonjs",
+  "name": "hive-br-dashboard",
+  "version": "2.19.0",
+  "description": "Dashboard de monitoramento de delegações Hive BR",
+  "main": "scripts/fetch_delegations.js",
+  "scripts": {
+    "start": "node scripts/fetch_delegations.js",
+    "report": "node scripts/generate_report.js"
+  },
   "dependencies": {
-    "node-fetch": "^2.6.7"
-  }
+    "node-fetch": "^2.6.7",
+    "@google/generative-ai": "^0.1.3"
+  },
+  "author": "Hive BR",
+  "license": "MIT"
 }
