@@ -1,5 +1,16 @@
 [
   {
+    "date": "2026-01-12",
+    "total_power": 55041.5039,
+    "own_hp": 14068.467,
+    "delegators_count": 60,
+    "monthly_votes": 351,
+    "trail_count": 84,
+    "hbr_staked_total": 5306
+  }
+]
+[
+  {
     "date": "2026-01-01",
     "total_power": 55431.50396571949,
     "own_hp": 14268.995965719467,
