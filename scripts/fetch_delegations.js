@@ -1,7 +1,7 @@
 /**
  * Script: Fetch Delegations
- * Version: 2.17.0
- * Update: Export Curation Trail Count
+ * Version: 2.18.0
+ * Update: Monthly History Logic (Upsert)
  */
 
 const fetch = require("node-fetch");
@@ -151,6 +151,47 @@ async function fetchVoteHistory(voterAccount) {
   return { stats: voteStats, votes_24h, votes_month0, votes_month1, votes_month2 };
 }
 
+// === LÓGICA DE HISTÓRICO MENSAL (V2.18.0) ===
+function updateMonthlyStats(metaData) {
+    const historyFile = path.join(DATA_DIR, "monthly_stats.json");
+    let history = [];
+    try {
+        if (fs.existsSync(historyFile)) {
+            history = JSON.parse(fs.readFileSync(historyFile));
+        }
+    } catch (e) {
+        console.warn("⚠️ Não foi possível ler monthly_stats.json, criando novo.");
+    }
+
+    // Define a chave do mês como o dia 01 (ex: 2026-01-01)
+    const today = new Date();
+    const monthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
+
+    const currentStats = {
+        date: monthKey,
+        total_power: (metaData.total_hp + metaData.project_account_hp),
+        own_hp: metaData.project_account_hp,
+        delegators_count: metaData.total_delegators,
+        monthly_votes: metaData.votes_month_current,
+        trail_count: metaData.curation_trail_count,
+        hbr_staked_total: metaData.total_hbr_staked
+    };
+
+    // Upsert: Atualiza se existir, Adiciona se não existir
+    const index = history.findIndex(h => h.date === monthKey);
+    if (index >= 0) {
+        history[index] = currentStats;
+    } else {
+        history.push(currentStats);
+    }
+
+    // Ordena por data para garantir consistência
+    history.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    fs.writeFileSync(historyFile, JSON.stringify(history, null, 2));
+    console.log(`📅 Histórico Mensal Atualizado para: ${monthKey}`);
+}
+
 async function run() {
   try {
     console.log(`1. 🔄 HAFSQL + Watchlist...`);
@@ -223,10 +264,14 @@ async function run() {
       votes_month_current: voteData.votes_month0,
       votes_month_prev1: voteData.votes_month1,
       votes_month_prev2: voteData.votes_month2,
-      curation_trail_count: CURATION_TRAIL_USERS.length // NOVO DADO
+      curation_trail_count: CURATION_TRAIL_USERS.length
     };
     fs.writeFileSync(path.join(DATA_DIR, "meta.json"), JSON.stringify(metaData, null, 2));
-    console.log("✅ Dados salvos (Versão 2.17.0)!");
+    
+    // Executa a atualização do histórico mensal
+    updateMonthlyStats(metaData);
+
+    console.log("✅ Dados salvos (Versão 2.18.0)!");
   } catch (err) {
     console.error("❌ Erro fatal:", err.message);
     process.exit(1);
